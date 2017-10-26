@@ -3,8 +3,8 @@ package org.testeditor.web.xtext.index
 import io.dropwizard.Application
 import io.dropwizard.setup.Bootstrap
 import io.dropwizard.setup.Environment
-import org.testeditor.web.xtext.index.resources.XtextIndexHelloWorldResource
 import org.testeditor.web.xtext.index.health.XtextIndexTemplateHealthCheck
+import org.testeditor.web.xtext.index.resources.XtextIndexHelloWorldResource
 
 class XtextIndexHelloWorldApplication extends Application<XtextIndexHelloWorldConfiguration> {
     def static main(String[] args) throws Exception {

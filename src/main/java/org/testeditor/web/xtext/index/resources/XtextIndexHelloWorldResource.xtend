@@ -1,15 +1,14 @@
 package org.testeditor.web.xtext.index.resources
 
-import org.testeditor.web.xtext.index.api.Saying
 import com.codahale.metrics.annotation.Timed
-
+import java.util.Optional
+import java.util.concurrent.atomic.AtomicLong
 import javax.ws.rs.GET
 import javax.ws.rs.Path
 import javax.ws.rs.Produces
 import javax.ws.rs.QueryParam
 import javax.ws.rs.core.MediaType
-import java.util.concurrent.atomic.AtomicLong
-import java.util.Optional
+import org.testeditor.web.xtext.index.api.Saying
 
 @Path("/xtext/index/hello-world")
 @Produces(MediaType.APPLICATION_JSON)

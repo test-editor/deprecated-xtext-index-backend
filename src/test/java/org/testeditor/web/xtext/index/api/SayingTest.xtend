@@ -1,11 +1,12 @@
 package org.testeditor.web.xtext.index.api
 
-import static extension io.dropwizard.testing.FixtureHelpers.*
-import static org.assertj.core.api.Assertions.assertThat
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.dropwizard.jackson.Jackson
 import org.junit.Test
-import com.fasterxml.jackson.databind.ObjectMapper
 
+import static org.assertj.core.api.Assertions.assertThat
+
+import static extension io.dropwizard.testing.FixtureHelpers.*
 
 class SayingTest {
 	extension ObjectMapper MAPPER = Jackson.newObjectMapper
