@@ -1,0 +1,41 @@
+group = 'org.testeditor.web'
+
+buildscript {
+        repositories {
+                jcenter()
+        }
+        dependencies {
+                classpath 'org.xtext:xtext-gradle-plugin:1.0.18'
+        }
+}
+
+apply plugin: 'java'
+apply plugin: 'org.xtext.xtend'
+apply plugin: 'application'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+    ext.versions = [
+        dropwizard: '1.1.0',
+        xtext: '2.12.0'
+    ]
+    ext.configPath = './'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile "org.eclipse.xtend:org.eclipse.xtend.lib:$versions.xtext"
+    compile "io.dropwizard:dropwizard-core:$versions.dropwizard"
+ 
+    testCompile 'junit:junit:4.12'
+}
+
+mainClassName = 'org.testeditor.web.xtext.index.XtextIndexHelloWorldApplication'
+
+run {
+	main mainClassName
+	args 'server', configPath + 'config.yml'
+}
