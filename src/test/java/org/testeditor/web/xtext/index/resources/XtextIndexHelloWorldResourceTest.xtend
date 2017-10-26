@@ -1,6 +1,6 @@
 package org.testeditor.web.xtext.index.resources
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.ClassRule
 import io.dropwizard.testing.junit.ResourceTestRule

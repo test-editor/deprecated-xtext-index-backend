@@ -8,11 +8,11 @@ import org.testeditor.web.xtext.index.health.XtextIndexTemplateHealthCheck
 
 class XtextIndexHelloWorldApplication extends Application<XtextIndexHelloWorldConfiguration> {
     def static main(String[] args) throws Exception {
-        new XtextIndexHelloWorldApplication().run(args);
+        new XtextIndexHelloWorldApplication().run(args)
     }
 
     override getName() {
-        return "hello-world";
+        return "hello-world"
     }
 
     override initialize(Bootstrap<XtextIndexHelloWorldConfiguration> bootstrap) {

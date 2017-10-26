@@ -22,11 +22,11 @@ class XtextIndexHelloWorldResource {
     new(String template, String defaultName) {
         this.template = template
         this.defaultName = defaultName
-        this.counter = new AtomicLong()
+        this.counter = new AtomicLong
     }
 
     @GET @Timed def sayHello(@QueryParam("name") Optional<String> name) {
         val value = String.format(template, name.orElse(defaultName))
-        return new Saying(counter.incrementAndGet(), value)
+        return new Saying(counter.incrementAndGet, value)
     }
 }
