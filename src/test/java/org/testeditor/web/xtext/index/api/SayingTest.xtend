@@ -15,8 +15,7 @@ class SayingTest {
 	def void shouldSerializeToJSON() throws Exception {
 		// given
 		val saying = new Saying(42, "Arthur Dent")
-		val expected = "fixtures/saying.json".fixture.readValue(Saying)
-			.writeValueAsString
+		val expected = "fixtures/saying.json".fixture.readValue(Saying).writeValueAsString
 
 		// when
 		val actual = saying.writeValueAsString
@@ -27,14 +26,14 @@ class SayingTest {
 
 	@Test
 	def void shouldDeserializeFromJSON() throws Exception {
-		//given
+		// given
 		val json = "fixtures/saying.json".fixture
 		val expected = new Saying(42, "Arthur Dent")
 
-		//when
+		// when
 		val actual = json.readValue(Saying)
 
-		//then
+		// then
 		assertThat(actual.content).isEqualTo(expected.content)
 	}
 

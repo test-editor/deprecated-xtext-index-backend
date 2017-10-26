@@ -14,18 +14,18 @@ import org.testeditor.web.xtext.index.api.Saying
 @Produces(MediaType.APPLICATION_JSON)
 class XtextIndexHelloWorldResource {
 
-    val String template
-    val String defaultName
-    val AtomicLong counter
+	val String template
+	val String defaultName
+	val AtomicLong counter
 
-    new(String template, String defaultName) {
-        this.template = template
-        this.defaultName = defaultName
-        this.counter = new AtomicLong
-    }
+	new(String template, String defaultName) {
+		this.template = template
+		this.defaultName = defaultName
+		this.counter = new AtomicLong
+	}
 
-    @GET @Timed def Saying sayHello(@QueryParam("name") Optional<String> name) {
-        val value = String.format(template, name.orElse(defaultName))
-        return new Saying(counter.incrementAndGet, value)
-    }
+	@GET @Timed def Saying sayHello(@QueryParam("name") Optional<String> name) {
+		val value = String.format(template, name.orElse(defaultName))
+		return new Saying(counter.incrementAndGet, value)
+	}
 }
