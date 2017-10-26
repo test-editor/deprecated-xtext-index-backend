@@ -16,11 +16,16 @@ apply plugin: 'application'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-    ext.versions = [
-        dropwizard: '1.1.0',
-        xtext: '2.12.0'
-    ]
-    ext.configPath = './'
+ext.versions = [
+    dropwizard: '1.1.0',
+    xtext: '2.12.0'
+]
+ext.configPath = './'
+
+sourceSets {
+    main.xtendOutputDir = 'src/main/xtend-gen'
+    test.xtendOutputDir = 'src/test/xtend-gen'
+}
 
 repositories {
     jcenter()
@@ -29,8 +34,11 @@ repositories {
 dependencies {
     compile "org.eclipse.xtend:org.eclipse.xtend.lib:$versions.xtext"
     compile "io.dropwizard:dropwizard-core:$versions.dropwizard"
- 
+
     testCompile 'junit:junit:4.12'
+    testCompile "io.dropwizard:dropwizard-testing:$versions.dropwizard"
+    testCompile 'org.assertj:assertj-core:3.8.0'
+    testCompile 'org.mockito:mockito-core:2.11.0'
 }
 
 mainClassName = 'org.testeditor.web.xtext.index.XtextIndexHelloWorldApplication'
@@ -38,4 +46,12 @@ mainClassName = 'org.testeditor.web.xtext.index.XtextIndexHelloWorldApplication'
 run {
 	main mainClassName
 	args 'server', configPath + 'config.yml'
+}
+
+test {
+    testLogging {
+        showStandardStreams = true
+        exceptionFormat = 'full'
+        events "standardOut", "started", "passed", "skipped", "failed"
+    }
 }
