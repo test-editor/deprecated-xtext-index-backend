@@ -13,7 +13,8 @@ class XtextIndexHelloWorldResourceTest {
 		.addResource(new XtextIndexHelloWorldResource("Hello, %s!", "Stranger"))
 		.build
 
-	@Test def void shouldRespondWithPersonalizedGreeting() {
+	@Test 
+	def void shouldRespondWithPersonalizedGreeting() {
 		// given
 		val name = "Arthur Dent"
 		val expected = new Saying(42, '''Hello, «name»!''')
