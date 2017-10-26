@@ -25,7 +25,7 @@ class XtextIndexHelloWorldResource {
         this.counter = new AtomicLong
     }
 
-    @GET @Timed def sayHello(@QueryParam("name") Optional<String> name) {
+    @GET @Timed def Saying sayHello(@QueryParam("name") Optional<String> name) {
         val value = String.format(template, name.orElse(defaultName))
         return new Saying(counter.incrementAndGet, value)
     }
