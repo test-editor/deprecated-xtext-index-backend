@@ -1,3 +1,16 @@
+/*******************************************************************************
+ * Copyright (c) 2012 - 2017 Signal Iduna Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ * Signal Iduna Corporation - initial API and implementation
+ * akquinet AG
+ * itemis AG
+ *******************************************************************************/
+
 package org.testeditor.web.xtext.index
 
 import io.dropwizard.Application
@@ -5,6 +18,7 @@ import io.dropwizard.setup.Bootstrap
 import io.dropwizard.setup.Environment
 import org.testeditor.web.xtext.index.health.XtextIndexTemplateHealthCheck
 import org.testeditor.web.xtext.index.resources.XtextIndexHelloWorldResource
+import org.testeditor.web.xtext.index.resources.bitbucket.Push
 
 class XtextIndexHelloWorldApplication extends Application<XtextIndexHelloWorldConfiguration> {
 	def static main(String[] args) throws Exception {
@@ -24,6 +38,7 @@ class XtextIndexHelloWorldApplication extends Application<XtextIndexHelloWorldCo
 		val healthCheck = new XtextIndexTemplateHealthCheck(configuration.template)
 
 		environment.jersey.register(resource)
+		environment.jersey.register(new Push => [ callback = null ]) // callback to be configured here
 		environment.healthChecks.register("template", healthCheck)
 	}
 }
