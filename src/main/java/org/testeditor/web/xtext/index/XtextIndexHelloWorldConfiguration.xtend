@@ -11,19 +11,23 @@ public class XtextIndexHelloWorldConfiguration extends Configuration {
 	new() {
 	}
 
-	@JsonProperty def getTemplate() {
+	@JsonProperty
+	def getTemplate() {
 		template
 	}
 
-	@JsonProperty def setTemplate(String template) {
+	@JsonProperty
+	def setTemplate(String template) {
 		this.template = template
 	}
 
-	@JsonProperty def getDefaultName() {
+	@JsonProperty
+	def getDefaultName() {
 		defaultName
 	}
 
-	@JsonProperty def setDefaultName(String defaultName) {
+	@JsonProperty
+	def setDefaultName(String defaultName) {
 		this.defaultName = defaultName
 	}
 }
