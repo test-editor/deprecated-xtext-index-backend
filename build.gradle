@@ -36,11 +36,14 @@ repositories {
 dependencies {
     compile "org.eclipse.xtend:org.eclipse.xtend.lib:$versions.xtext"
     compile "io.dropwizard:dropwizard-core:$versions.dropwizard"
+    compile "org.eclipse.xtext:org.eclipse.xtext:$versions.xtext"
+    
 
     testCompile 'junit:junit:4.12'
     testCompile "io.dropwizard:dropwizard-testing:$versions.dropwizard"
     testCompile 'org.assertj:assertj-core:3.8.0'
     testCompile 'org.mockito:mockito-core:2.11.0'
+    testCompile "org.eclipse.xtext:org.eclipse.xtext.testing:$versions.xtext"
 }
 
 mainClassName = 'org.testeditor.web.xtext.index.XtextIndexHelloWorldApplication'
