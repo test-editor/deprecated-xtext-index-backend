@@ -20,6 +20,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.testeditor.web.xtext.index.XtextIndexHelloWorldApplication
 
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST
 import static javax.ws.rs.core.Response.Status.NO_CONTENT
 import static org.assertj.core.api.Assertions.assertThat
 
@@ -42,6 +43,35 @@ class BitbucketWebhookIntegrationTest {
 
 		// then
 		assertThat(response.status).isEqualTo(NO_CONTENT.statusCode)
+	}
+
+	@Test
+	def void pushWebhookReturnsErrorOnInvalidJson() {
+		// given
+		val client = dropwizardRule.client
+
+		// when
+		val response = client //
+		.target('''http://localhost:«dropwizardRule.localPort»/xtext/index/webhook/bitbucket/push''') //
+		.request() //
+		.post(Entity.json('''{ "actor" : '''))
+
+		// then
+		assertThat(response.status).isEqualTo(BAD_REQUEST.statusCode)
+	}
+
+	@Test
+	def void pushWebhookReturnsErrorOnInvalidJsonPayload() {
+		// given
+		val client = dropwizardRule.client
+
+		// when
+		val response = client //
+		.target('''http://localhost:«dropwizardRule.localPort»/xtext/index/webhook/bitbucket/push''') //
+		.request() //
+		.post(Entity.json('''{ "actor" : "some" }''')) // incomplete, actor should be an object holding username etc.
+		// then
+		assertThat(response.status).isEqualTo(BAD_REQUEST.statusCode)
 	}
 
 }

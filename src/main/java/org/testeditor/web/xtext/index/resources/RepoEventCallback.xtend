@@ -13,6 +13,9 @@
 
 package org.testeditor.web.xtext.index.resources
 
+/**
+ * callback interface to pass repository events to listeners
+ */
 interface RepoEventCallback {
 	def void call(RepoEvent event)
 }

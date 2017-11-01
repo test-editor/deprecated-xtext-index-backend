@@ -16,6 +16,9 @@ package org.testeditor.web.xtext.index.resources
 import com.fasterxml.jackson.databind.JsonNode
 import org.eclipse.xtend.lib.annotations.Data
 
+/**
+ * Repository Event (unifying different sources e.g. GitHub, Bitbucket etc.)
+ */
 @Data
 class RepoEvent {
 	String userid

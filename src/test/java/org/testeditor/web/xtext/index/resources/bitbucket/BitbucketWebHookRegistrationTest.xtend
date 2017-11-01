@@ -21,7 +21,7 @@ import org.junit.Test
 import org.testeditor.web.xtext.index.XtextIndexHelloWorldApplication
 import org.testeditor.web.xtext.index.XtextIndexHelloWorldConfiguration
 
-import static org.mockito.ArgumentMatchers.*
+import static org.mockito.ArgumentMatchers.isA
 import static org.mockito.Mockito.when
 
 import static extension org.mockito.Mockito.mock

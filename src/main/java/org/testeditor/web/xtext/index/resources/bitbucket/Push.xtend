@@ -19,11 +19,20 @@ import javax.ws.rs.Consumes
 import javax.ws.rs.POST
 import javax.ws.rs.Path
 import javax.ws.rs.core.MediaType
-import org.slf4j.LoggerFactory
-import org.testeditor.web.xtext.index.resources.RepoEventCallback
-import org.testeditor.web.xtext.index.resources.RepoEvent
+import javax.ws.rs.core.Response
 import org.eclipse.xtend.lib.annotations.Accessors
+import org.slf4j.LoggerFactory
+import org.testeditor.web.xtext.index.resources.RepoEvent
+import org.testeditor.web.xtext.index.resources.RepoEventCallback
 
+import static javax.ws.rs.core.Response.Status.*
+import static javax.ws.rs.core.Response.status
+
+/**
+ * Minimal Endpoint for BitBucket Webhook Push Events.
+ * 
+ * Payload see https://confluence.atlassian.com/bitbucket/event-payloads-740262817.html 
+ */
 @Path("/xtext/index/webhook/bitbucket/push")
 @Consumes(MediaType.APPLICATION_JSON)
 class Push {
@@ -32,17 +41,44 @@ class Push {
 	
 	@Accessors(PUBLIC_SETTER)
 	var RepoEventCallback callback
-	
+
+	/**
+	 * Bitbucket WebHook Push Endpoint
+	 */
 	@POST
-	def void push(String payload) {
+	def Response push(String payload) {
 		val objectMapper = new ObjectMapper
 		val node = objectMapper.readValue(payload, JsonNode)
-		logger.info("Push.push with payload='{}'", payload)
-		
-		val actorNode = node.get("actor")
-		val username = actorNode.get("username").asText
-		
-		callback?.call(new RepoEvent(username, node))
+		var resultStatusBuilder = status(NO_CONTENT)
+		logger.info("Push.push received with payload='{}'", payload)
+		try {
+			val actorNode = node.get("actor")
+			val username = actorNode.get("username").asText
+			val reportEvent = new RepoEvent(username, node)
+
+			if (!guardedInformListener(reportEvent)) {
+				resultStatusBuilder = status(INTERNAL_SERVER_ERROR)
+			}
+
+		} catch (Exception e) {
+			logger.error("push event of unexpected (json) format", e)
+			resultStatusBuilder = status(BAD_REQUEST)
+		}
+
+		return resultStatusBuilder.build
+	}
+
+	/**
+	 * Report repository event to listener and return whether this succeeded (true) or failed (false)
+	 */
+	private def boolean guardedInformListener(RepoEvent event) {
+		try {
+			callback?.call(event)
+		} catch (Exception e) {
+			logger.error("push event callback failed", e)
+			return false
+		}
+		return true
 	}
 
 }
