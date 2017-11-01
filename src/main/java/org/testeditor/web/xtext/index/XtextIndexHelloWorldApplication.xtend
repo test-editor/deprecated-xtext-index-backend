@@ -13,12 +13,16 @@
 
 package org.testeditor.web.xtext.index
 
+import com.fasterxml.jackson.databind.module.SimpleModule
 import io.dropwizard.Application
 import io.dropwizard.setup.Bootstrap
 import io.dropwizard.setup.Environment
+import org.eclipse.xtext.resource.IEObjectDescription
 import org.testeditor.web.xtext.index.health.XtextIndexTemplateHealthCheck
 import org.testeditor.web.xtext.index.resources.XtextIndexHelloWorldResource
 import org.testeditor.web.xtext.index.resources.bitbucket.Push
+import org.testeditor.web.xtext.index.serialization.EObjectDescriptionDeserializer
+import org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerializer
 
 class XtextIndexHelloWorldApplication extends Application<XtextIndexHelloWorldConfiguration> {
 	def static main(String[] args) throws Exception {
@@ -30,7 +34,15 @@ class XtextIndexHelloWorldApplication extends Application<XtextIndexHelloWorldCo
 	}
 
 	override initialize(Bootstrap<XtextIndexHelloWorldConfiguration> bootstrap) {
-		// nothing to do yet
+		registerCustomEObjectSerializer(bootstrap)
+	}
+
+	def registerCustomEObjectSerializer(Bootstrap<XtextIndexHelloWorldConfiguration> bootstrap) {
+		val customSerializerModule = new SimpleModule
+		customSerializerModule.addSerializer(IEObjectDescription, new EObjectDescriptionSerializer(IEObjectDescription))
+		customSerializerModule.addDeserializer(IEObjectDescription,
+			new EObjectDescriptionDeserializer(IEObjectDescription))
+		bootstrap.objectMapper.registerModule(customSerializerModule)
 	}
 
 	override run(XtextIndexHelloWorldConfiguration configuration, Environment environment) {
