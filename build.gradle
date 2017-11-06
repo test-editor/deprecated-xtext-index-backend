@@ -1,12 +1,12 @@
 group = 'org.testeditor.web'
 
 buildscript {
-        repositories {
-                jcenter()
-        }
-        dependencies {
-                classpath 'org.xtext:xtext-gradle-plugin:1.0.18'
-        }
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'org.xtext:xtext-gradle-plugin:1.0.18'
+    }
 }
 
 apply plugin: 'java'
@@ -35,9 +35,9 @@ repositories {
 
 dependencies {
     compile "org.eclipse.xtend:org.eclipse.xtend.lib:$versions.xtext"
-    compile "io.dropwizard:dropwizard-core:$versions.dropwizard"
     compile "org.eclipse.xtext:org.eclipse.xtext:$versions.xtext"
-    
+    compile "io.dropwizard:dropwizard-core:$versions.dropwizard"
+    compile "org.eclipse.jgit:org.eclipse.jgit:4.7.0.201704051617-r"
 
     testCompile 'junit:junit:4.12'
     testCompile "io.dropwizard:dropwizard-testing:$versions.dropwizard"

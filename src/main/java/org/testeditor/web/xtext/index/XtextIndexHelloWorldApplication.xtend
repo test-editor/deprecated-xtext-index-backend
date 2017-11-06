@@ -14,9 +14,10 @@
 package org.testeditor.web.xtext.index
 
 import com.fasterxml.jackson.databind.module.SimpleModule
+import com.google.inject.Guice
 import io.dropwizard.Application
-import io.dropwizard.setup.Bootstrap
 import io.dropwizard.setup.Environment
+import javax.inject.Inject
 import org.eclipse.xtext.resource.IEObjectDescription
 import org.testeditor.web.xtext.index.health.XtextIndexTemplateHealthCheck
 import org.testeditor.web.xtext.index.resources.XtextIndexHelloWorldResource
@@ -25,6 +26,9 @@ import org.testeditor.web.xtext.index.serialization.EObjectDescriptionDeserializ
 import org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerializer
 
 class XtextIndexHelloWorldApplication extends Application<XtextIndexHelloWorldConfiguration> {
+
+	@Inject PushEventIndexUpdateCallback pushEventIndexCallback
+
 	def static main(String[] args) throws Exception {
 		new XtextIndexHelloWorldApplication().run(args)
 	}
@@ -48,9 +52,14 @@ class XtextIndexHelloWorldApplication extends Application<XtextIndexHelloWorldCo
 	override run(XtextIndexHelloWorldConfiguration configuration, Environment environment) {
 		val resource = new XtextIndexHelloWorldResource(configuration.template, configuration.defaultName)
 		val healthCheck = new XtextIndexTemplateHealthCheck(configuration.template)
+		Guice.createInjector().injectMembers(this)
 
 		environment.jersey.register(resource)
-		environment.jersey.register(new Push => [ callback = null ]) // callback to be configured here
+		environment.jersey.register(new Push => [
+			val injector = Guice.createInjector(#[new XtextIndexModule])
+			val xtextIndex = injector.getInstance(XtextIndex)
+			callback = pushEventIndexCallback => [ index = xtextIndex ]
+		])
 		environment.healthChecks.register("template", healthCheck)
 	}
 }
