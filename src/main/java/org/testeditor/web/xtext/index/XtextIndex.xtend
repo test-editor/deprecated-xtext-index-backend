@@ -18,8 +18,7 @@ class XtextIndex extends ResourceSetBasedResourceDescriptions {
 
 	static val logger = LoggerFactory.getLogger(XtextIndex)
 
-	// @Inject ModelQueryService queryService
-	@Inject 
+	@Inject
 	IResourceDescription.Manager resourceDescriptionManager
 	ResourceDescriptionsData data
 
@@ -45,13 +44,7 @@ class XtextIndex extends ResourceSetBasedResourceDescriptions {
 	def void update(URI uri) {
 		logger.debug("Reloading resource='{}'", uri)
 		val oldResource = resourceSet.getResource(uri, false)
-//		val element = oldResource.contents.head
-		// For our current detection of incoming reference we need to relink those resources
-		// that currently reference the element.
-//		val resourcesToRelink = newHashSet()
-//		if (element instanceof ModelElement) {
-//			resourcesToRelink += queryService.getActiveExternalReferences(element).map[eResource].filter(XtextResource).toSet
-//		}
+
 		if (oldResource.isLoaded) {
 			oldResource.unload
 		}
@@ -60,10 +53,6 @@ class XtextIndex extends ResourceSetBasedResourceDescriptions {
 			data.removeDescription(uri)
 		}
 		resource.addToIndex
-//		if (!resourcesToRelink.empty) {
-//			logger.info("Relinking dependent resources='{}' for resource='{}'.", resourcesToRelink.map[URI], resource.URI)
-//			resourcesToRelink.forEach[relink]
-//		}
 	}
 
 	/**
@@ -119,7 +108,8 @@ class XtextIndex extends ResourceSetBasedResourceDescriptions {
 			synchronized (data) {
 				data.addDescription(uri, resourceDescription)
 			}
-			logger.trace("Adding description for uri='{}'. Exported objects='{}'", uri, resourceDescription.exportedObjects)
+			logger.trace("Adding description for uri='{}'. Exported objects='{}'", uri,
+				resourceDescription.exportedObjects)
 		}
 	}
 

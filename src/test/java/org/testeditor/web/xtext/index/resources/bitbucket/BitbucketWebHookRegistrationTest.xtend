@@ -32,11 +32,10 @@ class BitbucketWebHookRegistrationTest {
 	val jersey = JerseyEnvironment.mock
 	val healthChecks = HealthCheckRegistry.mock
 	val application = new XtextIndexHelloWorldApplication
-	val config = new XtextIndexHelloWorldConfiguration
+	val config = new XtextIndexHelloWorldConfiguration => [ repoLocation = './repo/' ]
 
 	@Before
 	def void setup() {
-		config.template = '%s';
 		when(environment.jersey).thenReturn(jersey)
 		when(environment.healthChecks).thenReturn(healthChecks)
 	}
