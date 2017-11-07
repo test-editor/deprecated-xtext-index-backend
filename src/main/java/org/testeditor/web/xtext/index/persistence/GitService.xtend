@@ -8,7 +8,7 @@ import org.eclipse.jgit.diff.DiffEntry
 import org.eclipse.jgit.lib.ObjectId
 import org.eclipse.jgit.treewalk.CanonicalTreeParser
 import org.slf4j.LoggerFactory
-import org.assertj.core.util.VisibleForTesting
+import com.google.common.annotations.VisibleForTesting
 
 /**
  * provide some service around a git repo (read only)

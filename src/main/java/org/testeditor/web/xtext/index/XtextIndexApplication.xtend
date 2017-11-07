@@ -34,7 +34,7 @@ class XtextIndexApplication extends Application<XtextIndexConfiguration> {
 
 	@Inject PushEventIndexUpdateCallback pushEventIndexCallback
 	@Inject GitService gitService
-	@Inject XtextIndexPopulizer indexPopulizer
+	@Inject FileBasedXtextIndexFiller indexFiller
 
 	def static main(String[] args) throws Exception {
 		new XtextIndexApplication().run(args)
@@ -50,8 +50,8 @@ class XtextIndexApplication extends Application<XtextIndexConfiguration> {
 
 	private def registerCustomEObjectSerializer(Bootstrap<XtextIndexConfiguration> bootstrap) {
 		val customSerializerModule = new SimpleModule
-		customSerializerModule.addSerializer(IEObjectDescription, new EObjectDescriptionSerializer())
-		customSerializerModule.addDeserializer(IEObjectDescription, new EObjectDescriptionDeserializer())
+		customSerializerModule.addSerializer(IEObjectDescription, new EObjectDescriptionSerializer)
+		customSerializerModule.addDeserializer(IEObjectDescription, new EObjectDescriptionDeserializer)
 		bootstrap.objectMapper.registerModule(customSerializerModule)
 	}
 
@@ -73,7 +73,7 @@ class XtextIndexApplication extends Application<XtextIndexConfiguration> {
 	private def initializeWithRepository(File repository, XtextIndexHelloWorldConfiguration configuration) {
 		try {
 			gitService.init(repository, configuration.repoUrl)
-			indexPopulizer.populizeWithRepo(indexInstance, repository)
+			indexFiller.fillWithFileRecursively(indexInstance, repository)
 		} catch (Exception e) {
 			logger.error('''Initialization based on repositor='«repository.name»' failed with exceptions.''', e)
 		}

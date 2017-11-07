@@ -3,7 +3,7 @@ package org.testeditor.web.xtext.index
 import java.io.File
 import org.eclipse.emf.common.util.URI
 
-class XtextIndexPopulizer {
+class FileBasedXtextIndexFiller {
 	
 	/**
 	 * redefine to match only files of your languages to be added to the index
@@ -12,11 +12,11 @@ class XtextIndexPopulizer {
 		return true
 	}
 	
-	def void populizeWithRepo(XtextIndex index, File file) {
+	def void fillWithFileRecursively(XtextIndex index, File file) {
 		file.listFiles?.forEach[
-			populizeWithRepo(index, it)
+			fillWithFileRecursively(index, it)
 		]
-		if (file.isFile && isIndexRelevant(file)) {
+		if (file.isFile && file.isIndexRelevant) {
 			index.add(URI.createFileURI(file.absolutePath))
 		}
 	}
