@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  * Signal Iduna Corporation - initial API and implementation
  * akquinet AG
@@ -32,7 +32,10 @@ class BitbucketWebHookRegistrationTest {
 	val jersey = JerseyEnvironment.mock
 	val healthChecks = HealthCheckRegistry.mock
 	val application = new XtextIndexApplication
-	val config = new XtextIndexConfiguration => [repoLocation = './repo/']
+	val config = new XtextIndexConfiguration => [
+		repoLocation = './repo/'
+		repoUrl = 'https://github.com/test-editor/test-editor-examples.git'
+	]
 
 	@Before
 	def void setup() {
@@ -42,7 +45,7 @@ class BitbucketWebHookRegistrationTest {
 
 	@Test
 	def void registersPush() {
-		// given 
+		// given
 		// when
 		application.run(config, environment)
 

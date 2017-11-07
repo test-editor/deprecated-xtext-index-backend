@@ -8,18 +8,41 @@ import org.eclipse.jgit.diff.DiffEntry
 import org.eclipse.jgit.lib.ObjectId
 import org.eclipse.jgit.treewalk.CanonicalTreeParser
 import org.slf4j.LoggerFactory
+import org.assertj.core.util.VisibleForTesting
 
+/**
+ * provide some service around a git repo (read only)
+ */
 @Singleton
 class GitService {
-	/* see http://git.system.local/projects/TMT/repos/zgen/browse/dsl/de.signaliduna.tmt.zeusx.dsl.persistence/src/de/signaliduna/tmt/zeusx/dsl/persistence/git/GitService.xtend#17,28,38,328-330,332,334,336-337,339,344-345,352-354 */
+	
 	static val logger = LoggerFactory.getLogger(GitService)
 
 	protected Git git = null
 
-	def void initRepository(File projectFolder) {
-		git = Git.init.setDirectory(projectFolder).call
+	/** 
+	 * initialize this git service. either open the existing git and pull, or clone the remote repo
+	 */
+	def void init(File projectFolder, String uriString) {
+		if (projectFolder.exists && projectFolder.isDirectory && (projectFolder.listFiles.map[name].contains(".git"))) {
+			openRepository(projectFolder)
+			pull
+		} else {
+			cloneRepository(projectFolder, uriString)
+		}
 	}
 
+	/**
+	 * pull from remote
+	 */
+	def void pull() {
+		git.pull.call
+
+	}
+
+	/** 
+	 * calculate diff between these two commits
+	 */
 	def List<DiffEntry> calculateDiff(String oldHeadCommit, String newHeadCommit) {
 		return calculateDiff(ObjectId.fromString(oldHeadCommit), ObjectId.fromString(newHeadCommit))
 	}
@@ -36,6 +59,15 @@ class GitService {
 		} finally {
 			reader.close
 		}
+	}
+
+	private def void cloneRepository(File projectFolder, String uriString) {
+		git = Git.cloneRepository.setDirectory(projectFolder).setURI(uriString).call
+	}
+
+	@VisibleForTesting
+	protected def void openRepository(File projectFolder) {
+		git = Git.open(projectFolder)
 	}
 
 }

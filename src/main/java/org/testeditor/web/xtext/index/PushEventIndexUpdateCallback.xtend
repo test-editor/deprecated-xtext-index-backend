@@ -22,10 +22,16 @@ class PushEventIndexUpdateCallback implements RepoEventCallback {
 
 	override call(RepoEvent event) {
 		if (gitInfos.isPushEvent(event)) {
-			val oldNewCommits = gitInfos.getOldNewHeadCommitIds(event)
-			logger.info("processing push event with old,new-commits='{}'", oldNewCommits)
-			val diffs = gitService.calculateDiff(oldNewCommits.first, oldNewCommits.second)
-			translator.execute(diffs, index)
+			try {
+				logger.info("pulling changes into local repository.")
+				gitService.pull
+				val oldNewCommits = gitInfos.getOldNewHeadCommitIds(event)
+				logger.info("processing push event with old,new-commits='{}'", oldNewCommits)
+				val diffs = gitService.calculateDiff(oldNewCommits.first, oldNewCommits.second)
+				translator.execute(diffs, index)
+			} catch (Exception e) {
+				logger.error("Failing update of repo and index based on push event ='{}'", event)
+			}
 		} else {
 			logger.warn("ignoring event (not identified as push event) ='{}'", event.nativeEventPayload)
 		}

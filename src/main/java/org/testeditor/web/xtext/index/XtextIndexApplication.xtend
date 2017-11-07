@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  * Signal Iduna Corporation - initial API and implementation
  * akquinet AG
@@ -15,12 +15,14 @@ package org.testeditor.web.xtext.index
 
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.google.inject.Guice
+import com.google.inject.Injector
 import io.dropwizard.Application
 import io.dropwizard.setup.Bootstrap
 import io.dropwizard.setup.Environment
 import java.io.File
 import javax.inject.Inject
 import org.eclipse.xtext.resource.IEObjectDescription
+import org.slf4j.LoggerFactory
 import org.testeditor.web.xtext.index.persistence.GitService
 import org.testeditor.web.xtext.index.resources.bitbucket.Push
 import org.testeditor.web.xtext.index.serialization.EObjectDescriptionDeserializer
@@ -28,8 +30,11 @@ import org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerializer
 
 class XtextIndexApplication extends Application<XtextIndexConfiguration> {
 
+	protected static val logger = LoggerFactory.getLogger(XtextIndexHelloWorldApplication)
+
 	@Inject PushEventIndexUpdateCallback pushEventIndexCallback
 	@Inject GitService gitService
+	@Inject XtextIndexPopulizer indexPopulizer
 
 	def static main(String[] args) throws Exception {
 		new XtextIndexApplication().run(args)
@@ -53,14 +58,32 @@ class XtextIndexApplication extends Application<XtextIndexConfiguration> {
 	/**
 	 * please override and provide own (language dependent) injected xtext index instance
 	 */
-	def protected XtextIndex getIndexInstance() {
+	protected def XtextIndex getIndexInstance() {
 		val injector = Guice.createInjector(#[new XtextIndexModule])
 		return injector.getInstance(XtextIndex)
 	}
 
+	/**
+	 * override an provide own injector
+	 */
+	protected def Injector getGuiceInjector() {
+		Guice.createInjector
+	}
+
+	private def initializeWithRepository(File repository, XtextIndexHelloWorldConfiguration configuration) {
+		try {
+			gitService.init(repository, configuration.repoUrl)
+			indexPopulizer.populizeWithRepo(indexInstance, repository)
+		} catch (Exception e) {
+			logger.error('''Initialization based on repositor='«repository.name»' failed with exceptions.''', e)
+		}
+	}
+
 	override run(XtextIndexConfiguration configuration, Environment environment) {
-		Guice.createInjector.injectMembers(this)
-		gitService.initRepository(new File(configuration.repoLocation))
+		guiceInjector.injectMembers(this)
+		val repoLocationFile = new File(configuration.repoLocation)
+
+		initializeWithRepository(repoLocationFile, configuration)
 
 		environment.jersey.register(new Push => [
 			callback = pushEventIndexCallback => [index = indexInstance]
