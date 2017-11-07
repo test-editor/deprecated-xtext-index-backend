@@ -22,7 +22,7 @@ import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import org.testeditor.web.xtext.index.XtextIndexHelloWorldApplication
+import org.testeditor.web.xtext.index.XtextIndexApplication
 
 import static io.dropwizard.testing.ConfigOverride.config
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST
@@ -35,7 +35,7 @@ class BitbucketWebhookIntegrationTest {
 	public static val temporaryFolder = new TemporaryFolder
 
 	@Rule
-	public val dropwizardRule = new DropwizardAppRule(XtextIndexHelloWorldApplication,
+	public val dropwizardRule = new DropwizardAppRule(XtextIndexApplication,
 		ResourceHelpers.resourceFilePath("config.yml"), #[
 			config('repoLocation', temporaryFolder.root.absolutePath)
 		])
@@ -87,14 +87,13 @@ class BitbucketWebhookIntegrationTest {
 		.target('''http://localhost:«dropwizardRule.localPort»/xtext/index/webhook/bitbucket/push''') //
 		.request() //
 		.post(Entity.json('''{ "actor" : "some" }''')) // incomplete, actor should be an object holding username etc.
-		
 		// then
 		assertThat(response.status).isEqualTo(BAD_REQUEST.statusCode)
 	}
 
 	private def void recursiveDelete(File file, boolean deleteThis) {
 		file.listFiles?.forEach[recursiveDelete(true)]
-		if (deleteThis) {
+		if(deleteThis) {
 			file.delete
 		}
 	}
