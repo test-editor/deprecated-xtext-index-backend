@@ -8,7 +8,16 @@ public class XtextIndexHelloWorldConfiguration extends Configuration {
 	@NotEmpty var String template
 	@NotEmpty var String defaultName = "Stranger"
 
-	new() {
+	@NotEmpty var String repoLocation
+
+	@JsonProperty
+	def getRepoLocation() {
+		return repoLocation
+	}
+
+	@JsonProperty
+	def setRepoLocation(String repoLocation) {
+		this.repoLocation = repoLocation
 	}
 
 	@JsonProperty
@@ -30,4 +39,5 @@ public class XtextIndexHelloWorldConfiguration extends Configuration {
 	def setDefaultName(String defaultName) {
 		this.defaultName = defaultName
 	}
+
 }
