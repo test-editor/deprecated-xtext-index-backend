@@ -30,7 +30,7 @@ import org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerializer
 
 class XtextIndexApplication extends Application<XtextIndexConfiguration> {
 
-	protected static val logger = LoggerFactory.getLogger(XtextIndexHelloWorldApplication)
+	protected static val logger = LoggerFactory.getLogger(XtextIndexApplication)
 
 	@Inject PushEventIndexUpdateCallback pushEventIndexCallback
 	@Inject GitService gitService
@@ -70,7 +70,7 @@ class XtextIndexApplication extends Application<XtextIndexConfiguration> {
 		Guice.createInjector
 	}
 
-	private def initializeWithRepository(File repository, XtextIndexHelloWorldConfiguration configuration) {
+	private def initializeWithRepository(File repository, XtextIndexConfiguration configuration) {
 		try {
 			gitService.init(repository, configuration.repoUrl)
 			indexFiller.fillWithFileRecursively(indexInstance, repository)

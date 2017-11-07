@@ -7,6 +7,7 @@ import org.hibernate.validator.constraints.NotEmpty
 public class XtextIndexConfiguration extends Configuration {
 
 	@NotEmpty var String repoLocation
+	@NotEmpty var String repoUrl
 
 	@JsonProperty
 	def getRepoLocation() {
@@ -17,4 +18,15 @@ public class XtextIndexConfiguration extends Configuration {
 	def setRepoLocation(String repoLocation) {
 		this.repoLocation = repoLocation
 	}
+
+	@JsonProperty
+	def getRepoUrl() {
+		return repoUrl
+	}
+
+	@JsonProperty
+	def setRepoUrl(String repoUrl) {
+		this.repoUrl = repoUrl
+	}
+
 }
