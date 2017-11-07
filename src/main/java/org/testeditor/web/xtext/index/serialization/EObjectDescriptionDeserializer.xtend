@@ -22,8 +22,8 @@ import static org.testeditor.web.xtext.index.serialization.EObjectDescriptionSer
 
 class EObjectDescriptionDeserializer extends StdDeserializer<IEObjectDescription> {
 
-	new(Class<?> vc) {
-		super(vc)
+	new() {
+		super(IEObjectDescription)
 	}
 
 	override deserialize(JsonParser parser, DeserializationContext ctxt) throws IOException, JsonProcessingException {
@@ -41,10 +41,10 @@ class EObjectDescriptionDeserializer extends StdDeserializer<IEObjectDescription
 	private def eClassFromURIString(String uriString) {
 		val uri = URI.createURI(uriString)
 		val ePackage = EPackage.Registry.INSTANCE.getEPackage(uri.trimFragment.toString)
-		ePackage.eResource.getEObject(uri.fragment) as EClass
+		return ePackage.eResource.getEObject(uri.fragment) as EClass
 	}
 
 	private def getTextValue(TreeNode node, String fieldName) {
-		(node.get(fieldName) as TextNode).textValue
+		return (node.get(fieldName) as TextNode).textValue
 	}
 }

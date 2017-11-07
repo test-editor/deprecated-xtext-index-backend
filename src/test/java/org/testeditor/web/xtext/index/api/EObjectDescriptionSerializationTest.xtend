@@ -23,19 +23,19 @@ class EObjectDescriptionSerializationTest {
 
 	@BeforeClass
 	static def void ensureTestAssumptions() {
-		serializersHaveToBeRegistered()
-		metamodelMustBeKnown()
+		registerSerializers()
+		makeXtextModelKnown()
 	}
 
-	def static serializersHaveToBeRegistered() {
+	def static registerSerializers() {
 		val customSerializerModule = new SimpleModule
-		customSerializerModule.addSerializer(IEObjectDescription, new EObjectDescriptionSerializer(IEObjectDescription))
+		customSerializerModule.addSerializer(IEObjectDescription, new EObjectDescriptionSerializer())
 		customSerializerModule.addDeserializer(IEObjectDescription,
-			new EObjectDescriptionDeserializer(IEObjectDescription))
+			new EObjectDescriptionDeserializer())
 		mapper.registerModule(customSerializerModule)
 	}
 
-	def static metamodelMustBeKnown() {
+	def static makeXtextModelKnown() {
 		EPackage.Registry.INSTANCE.put(XtextPackage.eNS_URI, XtextPackage.eINSTANCE)
 	}
 
@@ -62,12 +62,12 @@ class EObjectDescriptionSerializationTest {
 	@Test
 	def void shouldDeserializeFromJSON() throws Exception {
 		// given
-		val json = "fixtures/eObjectDescription.json".fixture
+		val sampleEObjectDescription = "fixtures/eObjectDescription.json".fixture
 		val sampleEObject = XtextFactory.eINSTANCE.createGrammar
 		val expected = EObjectDescription.create("sampleEObject", sampleEObject)
 
 		// when
-		val actual = json.readValue(IEObjectDescription)
+		val actual = sampleEObjectDescription.readValue(IEObjectDescription)
 
 		// then
 		assertThat(actual).satisfies [

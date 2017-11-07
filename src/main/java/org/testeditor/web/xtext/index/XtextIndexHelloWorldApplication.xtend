@@ -37,11 +37,11 @@ class XtextIndexHelloWorldApplication extends Application<XtextIndexHelloWorldCo
 		registerCustomEObjectSerializer(bootstrap)
 	}
 
-	def registerCustomEObjectSerializer(Bootstrap<XtextIndexHelloWorldConfiguration> bootstrap) {
+	private def registerCustomEObjectSerializer(Bootstrap<XtextIndexHelloWorldConfiguration> bootstrap) {
 		val customSerializerModule = new SimpleModule
-		customSerializerModule.addSerializer(IEObjectDescription, new EObjectDescriptionSerializer(IEObjectDescription))
+		customSerializerModule.addSerializer(IEObjectDescription, new EObjectDescriptionSerializer())
 		customSerializerModule.addDeserializer(IEObjectDescription,
-			new EObjectDescriptionDeserializer(IEObjectDescription))
+			new EObjectDescriptionDeserializer())
 		bootstrap.objectMapper.registerModule(customSerializerModule)
 	}
 
