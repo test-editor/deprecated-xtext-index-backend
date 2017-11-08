@@ -59,7 +59,7 @@ dependencies {
     testCompile "org.eclipse.jgit:org.eclipse.jgit.junit:$versions.jgit"
 }
 
-mainClassName = 'org.testeditor.web.xtext.index.XtextIndexHelloWorldApplication'
+mainClassName = 'org.testeditor.web.xtext.index.XtextIndexApplication'
 
 run {
 	main mainClassName
