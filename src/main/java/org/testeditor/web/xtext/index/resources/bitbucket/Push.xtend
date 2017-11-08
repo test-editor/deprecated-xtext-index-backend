@@ -47,25 +47,30 @@ class Push {
 	 */
 	@POST
 	def Response push(String payload) {
-		val objectMapper = new ObjectMapper
-		val node = objectMapper.readValue(payload, JsonNode)
 		var resultStatusBuilder = status(NO_CONTENT)
 		logger.info("Push.push received with payload='{}'", payload)
 		try {
-			val actorNode = node.get("actor")
-			val username = actorNode.get("username").asText
-			val reportEvent = new RepoEvent(username, node)
-
-			if (!guardedInformListener(reportEvent)) {
+			val pushSucceeded = runPush(payload)
+			if (!pushSucceeded) {
 				resultStatusBuilder = status(INTERNAL_SERVER_ERROR)
 			}
-
 		} catch (Exception e) {
 			logger.error("push event of unexpected (json) format", e)
 			resultStatusBuilder = status(BAD_REQUEST)
 		}
 
 		return resultStatusBuilder.build
+	}
+	
+	def boolean runPush(String payload) {
+		val objectMapper = new ObjectMapper
+		val node = objectMapper.readValue(payload, JsonNode)
+		logger.info("Push.push received with payload='{}'", payload)
+		val actorNode = node.get("actor")
+		val username = actorNode.get("username").asText
+		val reportEvent = new RepoEvent(username, node)
+
+		return guardedInformListener(reportEvent)
 	}
 
 	/**

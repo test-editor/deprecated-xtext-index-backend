@@ -18,10 +18,17 @@ apply from: 'code-style/codestyle.gradle'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+repositories {
+    maven {
+        url  "http://dl.bintray.com/test-editor/maven" 
+    }
+}
+
 ext.versions = [
     dropwizard: '1.2.0',
     xtext: '2.13.0',
-    jgit: '4.7.0.201704051617-r'
+    jgit: '4.7.0.201704051617-r',
+    testEditorDropwizard: '0.4.0'
 ]
 ext.configPath = './'
 
@@ -39,7 +46,11 @@ dependencies {
     compile "org.eclipse.xtext:org.eclipse.xtext:$versions.xtext"
     compile "io.dropwizard:dropwizard-core:$versions.dropwizard"
     compile "org.eclipse.jgit:org.eclipse.jgit:$versions.jgit"
+	compile "org.testeditor.web:org.testeditor.web.dropwizard:$versions.testEditorDropwizard"
+	// compile "org.testeditor.web:org.testeditor.web.dropwizard.xtext:$versions.testEditorDropwizard"
 
+    testCompile 'org.testeditor:org.testeditor.tsl.dsl.web:1.7.0'
+    testCompile 'org.testeditor:org.testeditor.dsl.common.model:1.7.0'
     testCompile 'junit:junit:4.12'
     testCompile "io.dropwizard:dropwizard-testing:$versions.dropwizard"
     testCompile 'org.assertj:assertj-core:3.8.0'
