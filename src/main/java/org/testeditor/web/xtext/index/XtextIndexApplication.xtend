@@ -23,9 +23,11 @@ import javax.inject.Inject
 import org.eclipse.jgit.api.errors.GitAPIException
 import org.eclipse.xtext.ISetup
 import org.eclipse.xtext.resource.IEObjectDescription
+import org.eclipse.xtext.scoping.IGlobalScopeProvider
 import org.slf4j.LoggerFactory
 import org.testeditor.web.dropwizard.DropwizardApplication
 import org.testeditor.web.xtext.index.persistence.GitService
+import org.testeditor.web.xtext.index.resources.GlobalScopeResource
 import org.testeditor.web.xtext.index.resources.bitbucket.Push
 import org.testeditor.web.xtext.index.serialization.EObjectDescriptionDeserializer
 import org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerializer
@@ -73,6 +75,10 @@ abstract class XtextIndexApplication extends DropwizardApplication<XtextIndexCon
 		return this.indexInstance
 	}
 
+	protected def IGlobalScopeProvider getGlobalScopeProvider(){
+        return guiceInjector.getInstance(IGlobalScopeProvider)
+    }
+
 	/**
 	 * Adds the Xtext servlet and configures a session handler.
 	 */
@@ -88,6 +94,7 @@ abstract class XtextIndexApplication extends DropwizardApplication<XtextIndexCon
 		environment.jersey.register(new Push => [
 			callback = pushEventIndexCallback => [index = getIndexInstance]
 		])
+		environment.jersey.register(new GlobalScopeResource(globalScopeProvider, indexInstance))
 	}
 
 }

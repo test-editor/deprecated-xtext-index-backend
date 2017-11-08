@@ -20,14 +20,9 @@ import javax.ws.rs.Consumes
 @Produces(MediaType.APPLICATION_JSON)
 class GlobalScopeResource implements IGlobalScopeResource {
 
-	@Inject
-	var IGlobalScopeProvider globalScopeProvider
+	val IGlobalScopeProvider globalScopeProvider
+	val ResourceSetBasedResourceDescriptions index
 
-	@Inject
-	var ResourceSetBasedResourceDescriptions index
-
-	new() {
-	}
 
 	new(IGlobalScopeProvider globalScopeProvider, ResourceSetBasedResourceDescriptions index) {
 		this.globalScopeProvider = globalScopeProvider
@@ -45,7 +40,7 @@ class GlobalScopeResource implements IGlobalScopeResource {
 	}
 
 	private def createContextResource(String context) {
-		val resource = index.resourceSet.createResource(URI.createURI("dummy.xtext"))
+		val resource = index.resourceSet.createResource(URI.createURI("dummy.tsl"))
 		resource.load(new StringInputStream(context), emptyMap)
 		return resource
 	}
