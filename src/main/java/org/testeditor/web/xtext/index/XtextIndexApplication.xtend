@@ -28,6 +28,8 @@ import org.testeditor.web.xtext.index.resources.bitbucket.Push
 import org.testeditor.web.xtext.index.serialization.EObjectDescriptionDeserializer
 import org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerializer
 import org.eclipse.jgit.api.errors.GitAPIException
+import org.testeditor.web.xtext.index.resources.GlobalScopeResource
+import org.eclipse.xtext.scoping.IGlobalScopeProvider
 
 abstract class XtextIndexApplication extends DropwizardApplication<XtextIndexConfiguration> {
 
@@ -62,6 +64,8 @@ abstract class XtextIndexApplication extends DropwizardApplication<XtextIndexCon
 	abstract protected def List<ISetup> getLanguageSetups()
 
 	abstract protected def XtextIndex getIndexInstance()
+	
+	abstract protected def IGlobalScopeProvider getGlobalScopeProvider()
 
 	/**
 	 * Adds the Xtext servlet and configures a session handler.
@@ -75,6 +79,7 @@ abstract class XtextIndexApplication extends DropwizardApplication<XtextIndexCon
 		environment.jersey.register(new Push => [
 			callback = pushEventIndexCallback => [index = indexInstance]
 		])
+		environment.jersey.register(new GlobalScopeResource(globalScopeProvider, indexInstance))
 	}
 
 }
