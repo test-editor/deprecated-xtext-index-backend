@@ -64,7 +64,7 @@ class XtextIndexApplication extends Application<XtextIndexConfiguration> {
 	}
 
 	/**
-	 * override an provide own injector
+	 * override and provide own injector
 	 */
 	protected def Injector getGuiceInjector() {
 		Guice.createInjector
