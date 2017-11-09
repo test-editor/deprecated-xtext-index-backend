@@ -16,6 +16,8 @@ import org.testeditor.web.xtext.index.XtextIndex
 import org.testeditor.web.xtext.index.XtextIndexApplication
 
 import static io.dropwizard.testing.ConfigOverride.config
+import org.testeditor.tcl.dsl.TclStandaloneSetup
+import org.testeditor.aml.dsl.AmlStandaloneSetup
 
 class AbstractIntegrationTest {
 
@@ -24,7 +26,7 @@ class AbstractIntegrationTest {
 		val injector = tslWebSetup.createInjector
 
 		override getLanguageSetups() {
-			return #[tslWebSetup]
+			return #[tslWebSetup, new TclStandaloneSetup, new AmlStandaloneSetup]
 		}
 
 		override getGuiceInjector() {
