@@ -17,6 +17,8 @@ import org.eclipse.xtext.resource.impl.ResourceSetBasedResourceDescriptions
 import org.eclipse.xtext.scoping.IGlobalScopeProvider
 import org.eclipse.xtext.util.StringInputStream
 import org.slf4j.LoggerFactory
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl
+import javax.ws.rs.client.Entity
 
 @Path("/xtext/index/global-scope")
 @Produces(MediaType.APPLICATION_JSON)
@@ -40,7 +42,13 @@ class GlobalScopeResource implements IGlobalScopeResource {
 		try {
 			val eReference = createEReference(eReferenceURIString)
 			val resource = createContextResource(context, contextURI, contentType)
-			return Response.ok(globalScopeProvider.getScope(resource, eReference, null).allElements.toList).build
+			
+			logger.debug('''Delegating to global scope provider («globalScopeProvider.class.simpleName»)''')
+			val scope = globalScopeProvider.getScope(resource, eReference, null).allElements
+//			logger.debug('''Global scope provider returned the following elements: «scope.forEach[name]»''')
+			logger.debug('''Global scope provider returned the following elements: «scope.map[name].join(',')»''')
+			
+			return Response.ok(scope.toList).build
 
 		} catch(GlobalScopeResourceException e) {
 			return Response.serverError().entity(e).build
@@ -48,7 +56,8 @@ class GlobalScopeResource implements IGlobalScopeResource {
 	}
 
 	private def createContextResource(String context, String contextURI, String contentType) {
-		val resourceSet = tryToAccessIndexResourceSet
+		logger.debug('''Trying to retrieve or create context resource (type: «contentType», URI: «contextURI»''')
+		val resourceSet = new ResourceSetImpl//tryToAccessIndexResourceSet
 		val resource = tryToGetOrCreateResource(resourceSet, contextURI, contentType)
 		if(context !== null && context != "") {
 			tryToLoadResource(resource, context)
@@ -98,6 +107,7 @@ class GlobalScopeResource implements IGlobalScopeResource {
 	}
 
 	private def createEReference(String eReferenceURIString) {
+		logger.debug('''Trying to instantiate EReference from URI string: «eReferenceURIString»''')
 		val eReferenceURI = tryToCreateURI(eReferenceURIString)
 		val baseURIString = eReferenceURI.trimFragment().toString()
 		val ePackage = tryToRetrieveEPackage(baseURIString)
@@ -127,7 +137,9 @@ class GlobalScopeResource implements IGlobalScopeResource {
 
 	private def tryToLoadEReferenceFromEPackageResource(EPackage ePackage, URI eReferenceURI) {
 		if(eReferenceURI.hasFragment) {
-			return ePackage.eResource.getEObject(eReferenceURI.fragment) as EReference
+			val eReference = ePackage.eResource.getEObject(eReferenceURI.fragment) as EReference
+			logger.debug('''Successfully instantiated EReference: «eReference.name» («eReference.EReferenceType.name»)''')
+			return eReference
 		} else {
 			throw new InvalidEReferenceException('''Provided EReference URI does not point at concrete EObject (fragment is missing): «eReferenceURI.toString»''')
 		}
