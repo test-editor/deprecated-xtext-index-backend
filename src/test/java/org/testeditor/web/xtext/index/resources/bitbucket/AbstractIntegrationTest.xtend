@@ -11,6 +11,8 @@ import org.junit.After
 import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
+import org.testeditor.aml.dsl.AmlStandaloneSetup
+import org.testeditor.tcl.dsl.TclStandaloneSetup
 import org.testeditor.tsl.dsl.web.TslWebSetup
 import org.testeditor.web.xtext.index.XtextIndex
 import org.testeditor.web.xtext.index.XtextIndexApplication
@@ -24,7 +26,7 @@ class AbstractIntegrationTest {
 		val injector = tslWebSetup.createInjector
 
 		override getLanguageSetups() {
-			return #[tslWebSetup]
+			return #[tslWebSetup, new TclStandaloneSetup, new AmlStandaloneSetup]
 		}
 
 		override getIndexInstance() {
@@ -69,7 +71,7 @@ class AbstractIntegrationTest {
 
 	protected def void recursiveDelete(File file, boolean deleteThis) {
 		file.listFiles?.forEach[recursiveDelete(true)]
-		if(deleteThis) {
+		if (deleteThis) {
 			file.delete
 		}
 	}
