@@ -1,33 +1,55 @@
 package org.testeditor.web.xtext.index.resources.bitbucket
 
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.module.SimpleModule
+import java.io.InputStream
+import java.util.List
 import javax.ws.rs.client.Entity
 import org.eclipse.emf.ecore.util.EcoreUtil
 import org.eclipse.xtext.XtextPackage
+import org.eclipse.xtext.resource.IEObjectDescription
 import org.junit.Test
+import org.testeditor.tcl.TclPackage
+import org.testeditor.web.xtext.index.serialization.EObjectDescriptionDeserializer
 
 import static javax.ws.rs.core.Response.Status.OK
 import static org.assertj.core.api.Assertions.assertThat
-import org.testeditor.tcl.TclPackage
-import javax.ws.rs.core.GenericType
-import org.eclipse.xtext.resource.IEObjectDescription
-import java.util.List
 
 class GlobalScopeResourceIntegrationTest extends AbstractIntegrationTest {
 
 	@Test
 	def void macroReferencedByTcl() {
 		// given
-		addFileToIndex("pack/Macro.tml",
+		addFileToIndex(
+			"pack/Macro.tml",
 			'''
-			package pack
-			
-			# Macro
-			
-			## Mymacro
-			template = "call"
+				package org.testeditor.rcp4
+				
+				import org.testeditor.fixture.swt.*
+				
+				# SampleProjects
+				
+				## WebProjectGradle
+				
+					template = "Create a sample web project with Gradle"
+				
+					Component: ProjectExplorer
+					- Execute menu item "New/Project..." in tree <ProjectTree>
+				
+					Component: NewProjectDialog
+					- Select element "Test-Editor Project" in tree <ProjectType>
+					- Click on <NextButton>
+					- Type "demo" into <ProjectName>
+					- Click on <NextButton>
+					- Select element "Web Fixture" in list <AvailableFixturesList>
+					- Click on <AddFixtureButton>
+					- Check <GenerateWithExamples>
+					- Click on <FinishButton>
+					- Wait for dialog "Progress Information" to popup and then close after at most "3" respectively "120" seconds  
+					
 			'''
 		)
-		
+
 		val context = '''
 			package pack
 			
@@ -36,22 +58,34 @@ class GlobalScopeResourceIntegrationTest extends AbstractIntegrationTest {
 			* Some Teststep
 			Macro: 
 		'''
-		
-		val macroCollectionReference = EcoreUtil.getURI(TclPackage.eINSTANCE.macroTestStepContext_MacroCollection).toString
-		val client = dropwizardRule.client
-		
+
+		val macroCollectionReference = EcoreUtil.getURI(TclPackage.eINSTANCE.macroTestStepContext_MacroCollection).
+			toString
+		val client = dropwizardRule.client // new JerseyClientBuilder(dropwizardRule.environment).build("test client")
+		val jacksonModule = new SimpleModule
+		jacksonModule.addDeserializer(IEObjectDescription, new EObjectDescriptionDeserializer)
+		val objectMapper = dropwizardRule.environment.objectMapper.registerModule(jacksonModule)
 
 		// when
-		val eObjects = client
-				.target('''http://localhost:«dropwizardRule.localPort»/xtext/index/global-scope''') //
-				.queryParam("reference", macroCollectionReference) //
-				.queryParam("contentType", 'tcl') //
-				.queryParam("contextURI", 'pack/context.tcl') //
-				.request
-				.authHeader
-				.post(Entity.text(context), new GenericType<List<IEObjectDescription>> { })
+		val response = client.target('''http://localhost:«dropwizardRule.localPort»/xtext/index/global-scope''') //
+		.queryParam("reference", macroCollectionReference) //
+		.queryParam("contentType", 'tcl') //
+		.queryParam("contextURI", 'pack/context.tcl') //
+		.request.authHeader.post(Entity.text(context))
 
-		assertThat(eObjects).hasSize(1)
+		val payload = objectMapper.<List<IEObjectDescription>>readValue(response.entity as InputStream,
+			new TypeReference<List<IEObjectDescription>>() {
+			})
+
+		// then
+		assertThat(response.status).isEqualTo(OK.statusCode)
+		assertThat(payload).satisfies [
+			assertThat(it).isInstanceOf(List)
+			assertThat(size).isEqualTo(1)
+			assertThat(head.EClass.name).isEqualTo("MacroCollection")
+			assertThat(head.qualifiedName.toString).isEqualTo("SampleProjects")
+		]
+
 	}
 
 	@Test
