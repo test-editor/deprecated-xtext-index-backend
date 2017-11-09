@@ -108,8 +108,7 @@ class XtextIndex extends ResourceSetBasedResourceDescriptions {
 			synchronized (data) {
 				data.addDescription(uri, resourceDescription)
 			}
-			logger.trace("Adding description for uri='{}'. Exported objects='{}'", uri,
-				resourceDescription.exportedObjects)
+			logger.trace('''Adding description for uri='«uri»'. Exported objects='«resourceDescription.exportedObjects.map[toString + " (" + EClass.name + ")"]»'.''')
 		}
 	}
 	
