@@ -7,8 +7,52 @@ import org.junit.Test
 
 import static javax.ws.rs.core.Response.Status.OK
 import static org.assertj.core.api.Assertions.assertThat
+import org.testeditor.tcl.TclPackage
+import javax.ws.rs.core.GenericType
+import org.eclipse.xtext.resource.IEObjectDescription
+import java.util.List
 
 class GlobalScopeResourceIntegrationTest extends AbstractIntegrationTest {
+
+	@Test
+	def void macroReferencedByTcl() {
+		// given
+		addFileToIndex("pack/macro.tml",
+			'''
+			package pack
+			
+			# Macro
+			
+			## Mymacro
+			template = "call" 
+			'''
+		)
+		
+		val context = '''
+			package pack
+			
+			# Context
+			
+			* Some Teststep
+			Macro: 
+		'''
+		
+		val macroCollectionReference = EcoreUtil.getURI(TclPackage.eINSTANCE.macroTestStepContext_MacroCollection).toString
+		val client = dropwizardRule.client
+		
+
+		// when
+		val eObjects = client
+				.target('''http://localhost:«dropwizardRule.localPort»/xtext/index/global-scope''') //
+				.queryParam("reference", macroCollectionReference) //
+				.queryParam("contentType", 'tcl') //
+				.queryParam("contextURI", 'pack/context.tcl') //
+				.request
+				.authHeader
+				.post(Entity.text(context), new GenericType<List<IEObjectDescription>> { })
+
+		assertThat(eObjects).hasSize(1)
+	}
 
 	@Test
 	def void noResourceNoContentCompletion() {

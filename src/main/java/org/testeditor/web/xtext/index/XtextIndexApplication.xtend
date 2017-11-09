@@ -73,6 +73,7 @@ abstract class XtextIndexApplication extends DropwizardApplication<XtextIndexCon
 	protected def void configureServices(XtextIndexConfiguration configuration, Environment environment) {
 		try {
 			gitService.init(new File(configuration.repoLocation), configuration.repoUrl)
+			indexFiller.fillWithFileRecursively(indexInstance, new File(configuration.repoLocation))
 		} catch( GitAPIException e ) {
 			logger.error('''Failed repo initialization with repoLocation='«configuration.repoLocation» and repoUrl='«configuration.repoUrl»'. ''', e)
 		}
