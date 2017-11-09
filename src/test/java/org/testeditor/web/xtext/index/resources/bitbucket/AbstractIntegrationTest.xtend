@@ -18,12 +18,20 @@ import org.testeditor.web.xtext.index.XtextIndex
 import org.testeditor.web.xtext.index.XtextIndexApplication
 
 import static io.dropwizard.testing.ConfigOverride.config
+import org.eclipse.jgit.api.Git
+import org.junit.Before
+import org.junit.BeforeClass
+import org.eclipse.jgit.junit.JGitTestUtil
+import org.eclipse.jgit.internal.storage.file.FileRepository
+import org.eclipse.jgit.lib.Repository
+import org.eclipse.emf.common.util.URI
 
-class AbstractIntegrationTest {
+class AbstractIntegrationTest  {
 
 	public static class TestXtextIndexApplication extends XtextIndexApplication {
 		val tslWebSetup = new TslWebSetup
 		val injector = tslWebSetup.createInjector
+		val index = injector.getInstance(XtextIndex) // construct index with language injector
 
 		override getLanguageSetups() {
 			return #[tslWebSetup, new TclStandaloneSetup, new AmlStandaloneSetup]
@@ -43,6 +51,27 @@ class AbstractIntegrationTest {
 		ResourceHelpers.resourceFilePath("config.yml"), #[
 			config('repoLocation', temporaryFolder.root.absolutePath)
 		])
+
+//	static var Repository repo
+//	static var Git git
+
+//	@BeforeClass
+//	public static def void createEmptyRepo() {
+//		Git.init.setDirectory(temporaryFolder.root).call
+//		repo = new FileRepository(temporaryFolder.root)
+//		git = Git.open(temporaryFolder.root)
+//		// pull will fail but this is not relevant for the test and can be ignored
+//	}
+
+	protected def void addFileToIndex(String fileName, String content) {
+		val file = new File(temporaryFolder.root, fileName)
+		JGitTestUtil.write(file, content)
+		(dropwizardRule.application as TestXtextIndexApplication).indexInstance.add(URI.createFileURI(file.absolutePath))
+	}
+
+//	protected def void commit(String message) {
+//		git.commit.setMessage(message).call
+//	}
 
 	@After
 	public def void cleanupTempFolder() {
