@@ -56,15 +56,6 @@ class AbstractIntegrationTest {
 			config('logging.level', 'TRACE')
 		])
 
-//	static var Repository repo
-//	static var Git git
-//	@BeforeClass
-//	public static def void createEmptyRepo() {
-//		Git.init.setDirectory(temporaryFolder.root).call
-//		repo = new FileRepository(temporaryFolder.root)
-//		git = Git.open(temporaryFolder.root)
-//		// pull will fail but this is not relevant for the test and can be ignored
-//	}
 	protected def void addFileToIndex(String fileName, String content) {
 		val file = new File(temporaryFolder.root, fileName)
 		JGitTestUtil.write(file, content)
@@ -72,9 +63,6 @@ class AbstractIntegrationTest {
 			URI.createFileURI(file.absolutePath))
 	}
 
-//	protected def void commit(String message) {
-//		git.commit.setMessage(message).call	
-//	}
 	@After
 	public def void cleanupTempFolder() {
 		// since temporary folder is a class rule (to make sure it is run before the dropwizard rul),
@@ -98,7 +86,7 @@ class AbstractIntegrationTest {
 
 	protected def void recursiveDelete(File file, boolean deleteThis) {
 		file.listFiles?.forEach[recursiveDelete(true)]
-		if(deleteThis) {
+		if (deleteThis) {
 			file.delete
 		}
 	}

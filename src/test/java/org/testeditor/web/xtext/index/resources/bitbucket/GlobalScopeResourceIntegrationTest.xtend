@@ -21,32 +21,18 @@ class GlobalScopeResourceIntegrationTest extends AbstractIntegrationTest {
 	def void macroReferencedByTcl() {
 		// given
 		addFileToIndex(
-			"pack/Macro.tml",
+			"pack/MacroLib.tml",
 			'''
-				package org.testeditor.rcp4
+				package pack
 				
-				import org.testeditor.fixture.swt.*
+				# MacroLib
 				
-				# SampleProjects
+				## FirstMacro
 				
-				## WebProjectGradle
-				
-					template = "Create a sample web project with Gradle"
-				
-					Component: ProjectExplorer
-					- Execute menu item "New/Project..." in tree <ProjectTree>
-				
-					Component: NewProjectDialog
-					- Select element "Test-Editor Project" in tree <ProjectType>
-					- Click on <NextButton>
-					- Type "demo" into <ProjectName>
-					- Click on <NextButton>
-					- Select element "Web Fixture" in list <AvailableFixturesList>
-					- Click on <AddFixtureButton>
-					- Check <GenerateWithExamples>
-					- Click on <FinishButton>
-					- Wait for dialog "Progress Information" to popup and then close after at most "3" respectively "120" seconds  
-					
+					template = "code"
+
+					Component: SomeComponent
+					- Some fixture call
 			'''
 		)
 
@@ -83,7 +69,7 @@ class GlobalScopeResourceIntegrationTest extends AbstractIntegrationTest {
 			assertThat(it).isInstanceOf(List)
 			assertThat(size).isEqualTo(1)
 			assertThat(head.EClass.name).isEqualTo("MacroCollection")
-			assertThat(head.qualifiedName.toString).isEqualTo("SampleProjects")
+			assertThat(head.qualifiedName.toString).isEqualTo("MacroLib")
 		]
 
 	}
