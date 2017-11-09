@@ -1,11 +1,10 @@
 package org.testeditor.web.xtext.index.resources
 
-import java.util.List
 import javax.ws.rs.Consumes
 import javax.ws.rs.POST
 import javax.ws.rs.Produces
 import javax.ws.rs.QueryParam
-import org.eclipse.xtext.resource.IEObjectDescription
+import javax.ws.rs.core.Response
 
 interface IGlobalScopeResource {
 
@@ -24,9 +23,9 @@ interface IGlobalScopeResource {
 	 * Individual IEObjectDescription objects are transmitted serialized to JSON
 	 * in the following format (example description of an instance of class
 	 * @link{org.eclipse.xtext.Grammar Grammar}):
-	 *
+	 * 
 	 *   {
- 	 *     "eObjectURI" : "#//",
+	 *     "eObjectURI" : "#//",
 	 *     "uri" : "http://www.eclipse.org/2008/Xtext#//Grammar",
 	 *     "fullyQualifiedName" : "sampleEObject"
 	 *   }
@@ -43,5 +42,6 @@ interface IGlobalScopeResource {
 	@POST
 	@Consumes("text/plain")
 	@Produces("application/json")
-	def List<IEObjectDescription> getScope(String context, @QueryParam("reference") String eReferenceURIString)
+	def Response getScope(String context, @QueryParam("contentType") String contentType,
+		@QueryParam("contextURI") String contextURI, @QueryParam("reference") String eReferenceURIString)
 }
