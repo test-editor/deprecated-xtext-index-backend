@@ -48,15 +48,20 @@ dependencies {
     compile "org.eclipse.xtext:org.eclipse.xtext:$versions.xtext"
     compile "io.dropwizard:dropwizard-core:$versions.dropwizard"
     compile "org.eclipse.jgit:org.eclipse.jgit:$versions.jgit"
-	compile "org.testeditor.web:org.testeditor.web.dropwizard:$versions.testEditorDropwizard"
+    compile "org.testeditor.web:org.testeditor.web.dropwizard:$versions.testEditorDropwizard"
 
     testCompile "org.testeditor:org.testeditor.tsl.dsl.web:$versions.testEditorLanguage"
-    testCompile "org.testeditor:org.testeditor.tcl.dsl:$versions.testEditorLanguage"
+    testCompile ("org.testeditor:org.testeditor.tcl.dsl:$versions.testEditorLanguage") {
+        exclude group: "org.apache.logging.log4j"
+    }
+
     testCompile "org.testeditor:org.testeditor.tcl.model:$versions.testEditorLanguage"
     testCompile "org.testeditor:org.testeditor.aml.dsl:$versions.testEditorLanguage"
     testCompile "org.testeditor:org.testeditor.aml.model:$versions.testEditorLanguage"
     testCompile "org.testeditor:org.testeditor.dsl.common:$versions.testEditorLanguage"
+
     testCompile "org.testeditor:org.testeditor.dsl.common.model:$versions.testEditorLanguage"
+
     testCompile 'org.apache.commons:commons-lang3:3.4'
     testCompile 'org.gradle:gradle-tooling-api:2.14.1'
     testCompile "org.eclipse.xtend:org.eclipse.xtend.core:$versions.xtext"
