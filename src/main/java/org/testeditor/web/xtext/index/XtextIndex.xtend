@@ -112,5 +112,11 @@ class XtextIndex extends ResourceSetBasedResourceDescriptions {
 				resourceDescription.exportedObjects)
 		}
 	}
+	
+	override getResourceSet()
+	{
+		logger.debug("Accessing resource set")
+		return super.resourceSet
+	}
 
 }
