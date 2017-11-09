@@ -17,14 +17,14 @@ class GlobalScopeResourceIntegrationTest extends AbstractIntegrationTest {
 	@Test
 	def void macroReferencedByTcl() {
 		// given
-		addFileToIndex("pack/macro.tml",
+		addFileToIndex("pack/Macro.tml",
 			'''
 			package pack
 			
 			# Macro
 			
 			## Mymacro
-			template = "call" 
+			template = "call"
 			'''
 		)
 		
