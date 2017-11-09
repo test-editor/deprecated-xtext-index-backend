@@ -28,7 +28,8 @@ ext.versions = [
     dropwizard: '1.2.0',
     xtext: '2.13.0',
     jgit: '4.7.0.201704051617-r',
-    testEditorDropwizard: '0.4.0'
+    testEditorDropwizard: '0.4.0',
+    testEditorLanguage: '1.8.0'
 ]
 ext.configPath = './'
 
@@ -49,8 +50,17 @@ dependencies {
 	compile "org.testeditor.web:org.testeditor.web.dropwizard:$versions.testEditorDropwizard"
 	// compile "org.testeditor.web:org.testeditor.web.dropwizard.xtext:$versions.testEditorDropwizard"
 
-    testCompile 'org.testeditor:org.testeditor.tsl.dsl.web:1.7.0'
-    testCompile 'org.testeditor:org.testeditor.dsl.common.model:1.7.0'
+    testCompile "org.testeditor:org.testeditor.tsl.dsl.web:$versions.testEditorLanguage"
+    testCompile "org.testeditor:org.testeditor.tcl.dsl:$versions.testEditorLanguage"
+    testCompile "org.testeditor:org.testeditor.tcl.model:$versions.testEditorLanguage"
+    testCompile "org.testeditor:org.testeditor.aml.dsl:$versions.testEditorLanguage"
+    testCompile "org.testeditor:org.testeditor.aml.model:$versions.testEditorLanguage"
+    testCompile "org.testeditor:org.testeditor.dsl.common:$versions.testEditorLanguage"
+    testCompile "org.testeditor:org.testeditor.dsl.common.model:$versions.testEditorLanguage"
+    testCompile 'org.apache.commons:commons-lang3:3.4'
+    testCompile 'org.gradle:gradle-tooling-api:2.14.1'
+    testCompile "org.eclipse.xtend:org.eclipse.xtend.core:$versions.xtext"
+
     testCompile 'junit:junit:4.12'
     testCompile "io.dropwizard:dropwizard-testing:$versions.dropwizard"
     testCompile 'org.assertj:assertj-core:3.8.0'
