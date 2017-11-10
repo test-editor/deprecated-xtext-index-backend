@@ -31,7 +31,13 @@ interface IGlobalScopeResource {
 	 *   }
 	 * 
 	 * @param context The complete content of the resource (file) from where the
-	 * scope is looked at. Transmitted as plain-text in the body of the request.
+	 * scope is looked at. Optional. Transmitted as plain-text in the body of the request.
+	 * @param contentType The content type of the context resource. This is optional
+	 * if the content type can be determined from the context URI (file extension).
+	 * Transmitted as query parameter "contentType".
+	 * @param contextURI The URI of the context resource. This must be a valid URI name, but
+	 * not necessarily a resolvable locator. The file extension should match the resource's
+	 * content type, if applicable. Transmitted as query parameter "contextURI".
 	 * @param eReferenceURIString The URI of the EReference for which all
 	 * potential targets in the scope are to be retrieved. Transmitted as query
 	 * parameter "reference".
