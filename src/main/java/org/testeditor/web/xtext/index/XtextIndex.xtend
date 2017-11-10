@@ -102,20 +102,19 @@ class XtextIndex extends ResourceSetBasedResourceDescriptions {
 	}
 
 	private def void addToIndex(Resource resource) {
-		val uri = resource.URI
 		val resourceDescription = resourceDescriptionManager.getResourceDescription(resource)
 		if (resourceDescription !== null) {
+			val uri = resource.URI
 			synchronized (data) {
 				data.addDescription(uri, resourceDescription)
 			}
-			logger.trace('''Adding description for uri='«uri»'. Exported objects='«resourceDescription.exportedObjects.map[toString + " (" + EClass.name + ")"]»'.''')
+			if (logger.traceEnabled) {
+				val exportedObjects = resourceDescription.exportedObjects.map [
+					toString + " (" + EClass.name + ")"
+				]
+				logger.trace('''Adding description for uri='«uri»'. Exported objects='«exportedObjects»'.''')
+			}
 		}
-	}
-	
-	override getResourceSet()
-	{
-		logger.debug("Accessing resource set")
-		return super.resourceSet
 	}
 
 }

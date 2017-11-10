@@ -2,6 +2,10 @@ package org.testeditor.web.xtext.index
 
 import com.google.inject.Injector
 import org.eclipse.emf.common.util.URI
+import org.eclipse.emf.ecore.EPackage
+import org.eclipse.emf.ecore.EReference
+import org.eclipse.emf.ecore.util.EcoreUtil
+import org.eclipse.xtext.XtextPackage
 import org.eclipse.xtext.XtextStandaloneSetup
 import org.eclipse.xtext.mwe.ResourceDescriptionsProvider
 import org.eclipse.xtext.naming.QualifiedName
@@ -10,14 +14,6 @@ import org.junit.Before
 import org.junit.Test
 
 import static org.assertj.core.api.Assertions.assertThat
-import org.eclipse.xtext.XtextPackage
-import com.google.inject.Key
-import com.google.inject.name.Named
-import org.eclipse.xtext.Constants
-import org.eclipse.emf.ecore.EPackage
-import org.eclipse.emf.ecore.EReference
-import org.eclipse.emf.ecore.EClassifier
-import org.eclipse.emf.ecore.util.EcoreUtil
 
 class XtextIndexServiceTest {
 

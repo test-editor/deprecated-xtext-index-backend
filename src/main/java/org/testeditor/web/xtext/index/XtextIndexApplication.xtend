@@ -79,14 +79,18 @@ abstract class XtextIndexApplication extends DropwizardApplication<XtextIndexCon
         return guiceInjector.getInstance(IGlobalScopeProvider)
     }
 
+	protected def fillIndexRecursively(File root) {
+		indexFiller.fillWithFileRecursively(indexInstance, root)
+	}
+
 	/**
 	 * Adds the Xtext servlet and configures a session handler.
 	 */
 	protected def void configureServices(XtextIndexConfiguration configuration, Environment environment) {
 		try {
 			gitService.init(new File(configuration.repoLocation), configuration.repoUrl)
-			indexFiller.fillWithFileRecursively(getIndexInstance, new File(configuration.repoLocation))
-		} catch( GitAPIException e ) {
+			fillIndexRecursively(new File(configuration.repoLocation))
+		} catch (GitAPIException e) {
 			logger.error('''Failed repo initialization with repoLocation='«configuration.repoLocation» and repoUrl='«configuration.repoUrl»'. ''', e)
 		}
 		environment.jersey.register(new Push => [

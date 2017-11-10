@@ -1,8 +1,10 @@
 package org.testeditor.web.xtext.index.api
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import io.dropwizard.jackson.Jackson
+import java.util.List
 import org.eclipse.emf.ecore.EPackage
 import org.eclipse.emf.ecore.util.EcoreUtil
 import org.eclipse.xtext.XtextFactory
@@ -17,9 +19,6 @@ import org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerializer
 import static org.assertj.core.api.Assertions.assertThat
 
 import static extension io.dropwizard.testing.FixtureHelpers.*
-import javax.ws.rs.core.GenericType
-import com.fasterxml.jackson.core.type.TypeReference
-import java.util.List
 
 class EObjectDescriptionSerializationTest {
 	static extension ObjectMapper mapper = Jackson.newObjectMapper

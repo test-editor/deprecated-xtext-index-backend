@@ -13,12 +13,11 @@ import org.eclipse.emf.ecore.EPackage
 import org.eclipse.emf.ecore.EReference
 import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.emf.ecore.resource.ResourceSet
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl
 import org.eclipse.xtext.resource.impl.ResourceSetBasedResourceDescriptions
 import org.eclipse.xtext.scoping.IGlobalScopeProvider
 import org.eclipse.xtext.util.StringInputStream
 import org.slf4j.LoggerFactory
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl
-import javax.ws.rs.client.Entity
 
 @Path("/xtext/index/global-scope")
 @Produces(MediaType.APPLICATION_JSON)
@@ -45,7 +44,6 @@ class GlobalScopeResource implements IGlobalScopeResource {
 			
 			logger.debug('''Delegating to global scope provider («globalScopeProvider.class.simpleName»)''')
 			val scope = globalScopeProvider.getScope(resource, eReference, null).allElements
-//			logger.debug('''Global scope provider returned the following elements: «scope.forEach[name]»''')
 			logger.debug('''Global scope provider returned the following elements: «scope.map[name].join(',')»''')
 			
 			return Response.ok(scope.toList).build
@@ -57,24 +55,15 @@ class GlobalScopeResource implements IGlobalScopeResource {
 
 	private def createContextResource(String context, String contextURI, String contentType) {
 		logger.debug('''Trying to retrieve or create context resource (type: «contentType», URI: «contextURI»''')
-		val resourceSet = new ResourceSetImpl//tryToAccessIndexResourceSet
-		val resource = tryToGetOrCreateResource(resourceSet, contextURI, contentType)
+		val resourceSet = new ResourceSetImpl
+		val resource = getOrCreateResource(resourceSet, contextURI, contentType)
 		if(context !== null && context != "") {
-			tryToLoadResource(resource, context)
+			loadResource(resource, context)
 		}
 		return resource
 	}
 
-	private def tryToAccessIndexResourceSet() {
-		if(index !== null && index.resourceSet !== null) {
-			return index.resourceSet
-		} else {
-			throw new IndexUnavailableException(
-			'''Could not retrieve resource set from index «IF index === null»(index unavailable)«ENDIF»''')
-		}
-	}
-
-	private def tryToGetOrCreateResource(ResourceSet resourceSet, String contextURI, String contentType) {
+	private def getOrCreateResource(ResourceSet resourceSet, String contextURI, String contentType) {
 		try {
 			if(contextURI !== null) {
 				val uri = URI.createURI(contextURI)
@@ -96,7 +85,7 @@ class GlobalScopeResource implements IGlobalScopeResource {
 		}
 	}
 
-	private def tryToLoadResource(Resource resource, String context) {
+	private def loadResource(Resource resource, String context) {
 		try {
 			resource.load(new StringInputStream(context), emptyMap)
 		} catch(IOException e) {
@@ -108,14 +97,14 @@ class GlobalScopeResource implements IGlobalScopeResource {
 
 	private def createEReference(String eReferenceURIString) {
 		logger.debug('''Trying to instantiate EReference from URI string: «eReferenceURIString»''')
-		val eReferenceURI = tryToCreateURI(eReferenceURIString)
+		val eReferenceURI = createURI(eReferenceURIString)
 		val baseURIString = eReferenceURI.trimFragment().toString()
-		val ePackage = tryToRetrieveEPackage(baseURIString)
+		val ePackage = retrieveEPackage(baseURIString)
 
-		return tryToLoadEReferenceFromEPackageResource(ePackage, eReferenceURI)
+		return loadEReferenceFromEPackageResource(ePackage, eReferenceURI)
 	}
 
-	private def tryToCreateURI(String eReferenceURIString) {
+	private def createURI(String eReferenceURIString) {
 		try {
 			return URI.createURI(eReferenceURIString)
 		} catch(IllegalArgumentException e) {
@@ -123,7 +112,7 @@ class GlobalScopeResource implements IGlobalScopeResource {
 		}
 	}
 
-	private def tryToRetrieveEPackage(String baseURIString) {
+	private def retrieveEPackage(String baseURIString) {
 		val ePackage = EPackage.Registry.INSTANCE.getEPackage(baseURIString)
 
 		if(ePackage === null) {
@@ -135,7 +124,7 @@ class GlobalScopeResource implements IGlobalScopeResource {
 		}
 	}
 
-	private def tryToLoadEReferenceFromEPackageResource(EPackage ePackage, URI eReferenceURI) {
+	private def loadEReferenceFromEPackageResource(EPackage ePackage, URI eReferenceURI) {
 		if(eReferenceURI.hasFragment) {
 			val eReference = ePackage.eResource.getEObject(eReferenceURI.fragment) as EReference
 			logger.debug('''Successfully instantiated EReference: «eReference.name» («eReference.EReferenceType.name»)''')

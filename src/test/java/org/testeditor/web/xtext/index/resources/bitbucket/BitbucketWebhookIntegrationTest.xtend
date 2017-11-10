@@ -58,8 +58,8 @@ class BitbucketWebhookIntegrationTest extends AbstractIntegrationTest {
 	}
 
 	@Test
-	def void pushWebhookReturnsErrorOnInvalidJsonPayload() {
-		// given
+	def void pushWebhookReturnsErrorOnJsonPayloadWithInvalidActor() {
+		// given 
 		val client = dropwizardRule.client
 
 		// when
@@ -67,7 +67,8 @@ class BitbucketWebhookIntegrationTest extends AbstractIntegrationTest {
 		.target('''http://localhost:«dropwizardRule.localPort»/xtext/index/webhook/bitbucket/push''') //
 		.request //
 		.authHeader //
-		.post(Entity.json('''{ "actor" : "some" }''')) // incomplete, actor should be an object holding username etc.
+		.post(Entity.json('''{ "actor" : "some" }'''))
+
 		// then
 		assertThat(response.status).isEqualTo(BAD_REQUEST.statusCode)
 	}
