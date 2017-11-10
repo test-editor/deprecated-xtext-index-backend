@@ -1,4 +1,4 @@
-package org.testeditor.web.xtext.index.resources.bitbucket
+package org.testeditor.web.xtext.index.resources
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.module.SimpleModule
@@ -15,7 +15,7 @@ import org.testeditor.web.xtext.index.serialization.EObjectDescriptionDeserializ
 import static javax.ws.rs.core.Response.Status.OK
 import static org.assertj.core.api.Assertions.assertThat
 
-class GlobalScopeResourceIntegrationTest extends AbstractIntegrationTest {
+class GlobalScopeResourceIntegrationTest extends org.testeditor.web.xtext.index.resources.bitbucket.AbstractIntegrationTest {
 
 	@Test
 	def void macroReferencedByTcl() {
@@ -30,7 +30,7 @@ class GlobalScopeResourceIntegrationTest extends AbstractIntegrationTest {
 				## FirstMacro
 				
 					template = "code"
-
+				
 					Component: SomeComponent
 					- Some fixture call
 			'''
@@ -68,7 +68,7 @@ class GlobalScopeResourceIntegrationTest extends AbstractIntegrationTest {
 		assertThat(payload).satisfies [
 			assertThat(it).isInstanceOf(List)
 			assertThat(size).isEqualTo(1)
-			assertThat(head.EClass.name).isEqualTo("MacroCollection")
+			assertThat(head.getEClass.name).isEqualTo("MacroCollection")
 			assertThat(head.qualifiedName.toString).isEqualTo("MacroLib")
 		]
 
