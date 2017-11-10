@@ -2,16 +2,25 @@ package org.testeditor.web.xtext.index.resources.bitbucket
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.module.SimpleModule
 import com.google.inject.Guice
 import com.google.inject.util.Modules
 import io.dropwizard.testing.ResourceHelpers
 import io.dropwizard.testing.junit.DropwizardAppRule
 import java.io.File
+import java.io.InputStream
+import java.util.List
+import javax.ws.rs.client.Entity
 import javax.ws.rs.client.Invocation
+import javax.ws.rs.core.Response
 import org.eclipse.emf.common.util.URI
 import org.eclipse.jgit.junit.JGitTestUtil
+import org.eclipse.xtext.resource.IEObjectDescription
 import org.eclipse.xtext.scoping.IGlobalScopeProvider
 import org.junit.After
+import org.junit.Before
 import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
@@ -22,27 +31,18 @@ import org.testeditor.tsl.dsl.web.TslWebSetup
 import org.testeditor.web.xtext.index.XtextIndex
 import org.testeditor.web.xtext.index.XtextIndexApplication
 import org.testeditor.web.xtext.index.XtextIndexModule
+import org.testeditor.web.xtext.index.serialization.EObjectDescriptionDeserializer
 
 import static io.dropwizard.testing.ConfigOverride.config
-import org.junit.Before
-import com.fasterxml.jackson.databind.module.SimpleModule
-import org.eclipse.xtext.resource.IEObjectDescription
-import org.testeditor.web.xtext.index.serialization.EObjectDescriptionDeserializer
-import com.fasterxml.jackson.databind.ObjectMapper
-import java.util.List
-import java.io.InputStream
-import com.fasterxml.jackson.core.type.TypeReference
-import javax.ws.rs.client.Entity
 
 class AbstractIntegrationTest {
 
 	public static class TestXtextIndexApplication extends XtextIndexApplication {
-		val tslWebSetup = new TslWebSetup
 		val injector = Guice.createInjector(Modules.override(new TslRuntimeModule).with(new XtextIndexModule))
 		val index = injector.getInstance(XtextIndex) // construct index with language injector
 
 		override getLanguageSetups() {
-			return #[tslWebSetup, new TclStandaloneSetup, new AmlStandaloneSetup]
+			return #[new TslWebSetup, new TclStandaloneSetup, new AmlStandaloneSetup]
 		}
 
 		override getGuiceInjector() {
@@ -76,9 +76,9 @@ class AbstractIntegrationTest {
 		(dropwizardRule.application as TestXtextIndexApplication).indexInstance.add(
 			URI.createFileURI(file.absolutePath))
 	}
-	
-	def indexOfSize(int size) {
-		for (var counter = 0; counter < size; counter++) {
+
+	def addSeparateMacroCollectionToIndexTimes(int size) {
+		for (counter : 0 ..< size) {
 			addFileToIndex(
 				'''pack/MacroLib«counter».tml''',
 				'''
@@ -88,7 +88,7 @@ class AbstractIntegrationTest {
 					
 					## Macro«counter»
 					
-						template = "code"
+						template = "code«counter»"
 					
 						Component: SomeComponent
 						- Some fixture call
@@ -99,7 +99,7 @@ class AbstractIntegrationTest {
 
 	@After
 	public def void cleanupTempFolder() {
-		// since temporary folder is a class rule (to make sure it is run before the dropwizard rul),
+		// since temporary folder is a class rule (to make sure it is run before the dropwizard rule),
 		// cleanup all contents of the temp folder without deleting it itself
 		recursiveDelete(temporaryFolder.root, false)
 	}
@@ -124,9 +124,11 @@ class AbstractIntegrationTest {
 			file.delete
 		}
 	}
-	
-	protected def postGlobalScopeRequest(String context, String reference, String contentType, String contextURI) {
-		dropwizardRule.client //
+
+	protected def Response postGlobalScopeRequest(String context, String reference, String contentType,
+		String contextURI) {
+
+		return dropwizardRule.client //
 		.target('''http://localhost:«dropwizardRule.localPort»/xtext/index/global-scope''') //
 		.queryParam("reference", reference) //
 		.queryParam("contentType", contentType) //
@@ -138,7 +140,8 @@ class AbstractIntegrationTest {
 
 	protected def List<IEObjectDescription> deserializeIEObjectDescriptions(InputStream payload) {
 		return objectMapper.<List<IEObjectDescription>>readValue(payload,
-			new TypeReference<List<IEObjectDescription>>() {})
+			new TypeReference<List<IEObjectDescription>>() {
+			})
 	}
 
 	protected def Exception deserializeException(InputStream payload) {
