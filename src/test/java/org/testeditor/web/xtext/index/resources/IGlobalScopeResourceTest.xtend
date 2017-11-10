@@ -1,6 +1,7 @@
 package org.testeditor.web.xtext.index.resources
 
 import com.fasterxml.jackson.databind.module.SimpleModule
+import com.squarespace.jersey2.guice.JerseyGuiceUtils
 import io.dropwizard.testing.junit.ResourceTestRule
 import java.util.List
 import javax.ws.rs.Consumes
@@ -18,7 +19,8 @@ import org.eclipse.xtext.naming.QualifiedName
 import org.eclipse.xtext.resource.EObjectDescription
 import org.eclipse.xtext.resource.IEObjectDescription
 import org.junit.Before
-import org.junit.ClassRule
+import org.junit.BeforeClass
+import org.junit.Rule
 import org.junit.Test
 import org.testeditor.web.xtext.index.serialization.EObjectDescriptionDeserializer
 import org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerializer
@@ -33,9 +35,21 @@ import static org.assertj.core.api.Assertions.assertThat
  */
 class IGlobalScopeResourceTest {
 
-	private static val resourceUnderTest = new DummyGlobalScopeResource
+	/**
+	 * Workaround related to the following dropwizard / dropwizard-guice / jersey2-guice issues
+	 * https://github.com/dropwizard/dropwizard/issues/1772
+	 * https://github.com/HubSpot/dropwizard-guice/issues/95
+	 * https://github.com/HubSpot/dropwizard-guice/issues/88
+	 * https://github.com/Squarespace/jersey2-guice/pull/39
+	 */
+	@BeforeClass
+	static def void ensureServiceLocatorPopulated() {
+		JerseyGuiceUtils.reset();
+	}
 
-	@ClassRule public static val resources = ResourceTestRule.builder.addResource(resourceUnderTest).build
+	private val resourceUnderTest = new DummyGlobalScopeResource
+
+	@Rule public val resources = ResourceTestRule.builder.addResource(resourceUnderTest).build
 
 	@Before
 	def void registerCustomSerializers() {
