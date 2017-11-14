@@ -33,7 +33,7 @@ class GlobalScopeResource implements IGlobalScopeResource {
 		this.index = index
 	}
 
-	@POST
+	@POST // to allow context content to be passed as payload (instead of using query parameters)
 	@Consumes("text/plain")
 	@Produces("application/json")
 	override Response getScope(String context, @QueryParam("contentType") String contentType,
@@ -41,23 +41,23 @@ class GlobalScopeResource implements IGlobalScopeResource {
 		try {
 			val eReference = createEReference(eReferenceURIString)
 			val resource = createContextResource(context, contextURI, contentType)
-			
+
 			logger.debug('''Delegating to global scope provider («globalScopeProvider.class.simpleName»)''')
 			val scope = globalScopeProvider.getScope(resource, eReference, null).allElements
 			logger.debug('''Global scope provider returned the following elements: «scope.map[name].join(',')»''')
-			
+
 			return Response.ok(scope.toList).build
 
-		} catch(GlobalScopeResourceException e) {
-			return Response.serverError().entity(e).build
+		} catch (GlobalScopeResourceException e) {
+			return Response.serverError.entity(e).build
 		}
 	}
 
 	private def createContextResource(String context, String contextURI, String contentType) {
 		logger.debug('''Trying to retrieve or create context resource (type: «contentType», URI: «contextURI»''')
-		val resourceSet = new ResourceSetImpl
+		val resourceSet = new ResourceSetImpl // using empty resource set, since context will be used for this request only and is not part of the index
 		val resource = getOrCreateResource(resourceSet, contextURI, contentType)
-		if(context !== null && context != "") {
+		if (!context.nullOrEmpty) {
 			loadResource(resource, context)
 		}
 		return resource
@@ -65,30 +65,23 @@ class GlobalScopeResource implements IGlobalScopeResource {
 
 	private def getOrCreateResource(ResourceSet resourceSet, String contextURI, String contentType) {
 		try {
-			if(contextURI !== null) {
-				val uri = URI.createURI(contextURI)
-				var resource = resourceSet.getResource(uri, false)
-				if(resource === null) {
-					resource = resourceSet.createResource(uri, contentType)
-				}
-				if(resource !== null) {
-					return resource
+			val uri = URI.createURI(contextURI)
+			val resource = resourceSet.getResource(uri, false) ?: resourceSet.createResource(uri, contentType)
 
-				} else {
-					throw new ResourceCreationException('''Failed to create resource for URI '«contextURI»' of type '«contentType»'.''')
-				}
+			if (resource !== null) {
+				return resource
 			} else {
-				throw new InvalidContextURI('''No context URI was provided (URI is null).''')
+				throw new ResourceCreationException('''Failed to create resource for URI '«contextURI»' of type '«contentType»'.''')
 			}
-		} catch(IllegalArgumentException e) {
-			throw new InvalidContextURI('''Provided context URI is invalid: «contextURI»''', e)
+		} catch (RuntimeException e) {
+			throw new ResourceCreationException('''Failed to create resource for URI '«contextURI»' of type '«contentType»'.''', e)
 		}
 	}
 
 	private def loadResource(Resource resource, String context) {
 		try {
 			resource.load(new StringInputStream(context), emptyMap)
-		} catch(IOException e) {
+		} catch (IOException e) {
 			logger.
 				warn('''Failed to load provided content into resource «IF (resource !== null)»(URI: «resource.URI»)«ELSE» (resource is null!)«ENDIF»''')
 		}
@@ -107,7 +100,7 @@ class GlobalScopeResource implements IGlobalScopeResource {
 	private def createURI(String eReferenceURIString) {
 		try {
 			return URI.createURI(eReferenceURIString)
-		} catch(IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			throw new InvalidEReferenceException('''Provided EReference URI is invalid: «eReferenceURIString»''', e)
 		}
 	}
@@ -115,9 +108,9 @@ class GlobalScopeResource implements IGlobalScopeResource {
 	private def retrieveEPackage(String baseURIString) {
 		val ePackage = EPackage.Registry.INSTANCE.getEPackage(baseURIString)
 
-		if(ePackage === null) {
+		if (ePackage === null) {
 			throw new InvalidEReferenceException('''Failed to load EPackage for URI: «baseURIString»''')
-		} else if(ePackage.eResource === null) {
+		} else if (ePackage.eResource === null) {
 			throw new InvalidEReferenceException('''Containing resource for EPackage not found (URI: «baseURIString»)''')
 		} else {
 			return ePackage
@@ -125,7 +118,7 @@ class GlobalScopeResource implements IGlobalScopeResource {
 	}
 
 	private def loadEReferenceFromEPackageResource(EPackage ePackage, URI eReferenceURI) {
-		if(eReferenceURI.hasFragment) {
+		if (eReferenceURI.hasFragment) {
 			val eReference = ePackage.eResource.getEObject(eReferenceURI.fragment) as EReference
 			logger.debug('''Successfully instantiated EReference: «eReference.name» («eReference.EReferenceType.name»)''')
 			return eReference
@@ -137,6 +130,7 @@ class GlobalScopeResource implements IGlobalScopeResource {
 }
 
 class GlobalScopeResourceException extends RuntimeException {
+
 	new(String message, Throwable cause) {
 		super(message, cause)
 	}
@@ -144,6 +138,7 @@ class GlobalScopeResourceException extends RuntimeException {
 	new(String message) {
 		super(message)
 	}
+
 }
 
 class InvalidContextURI extends GlobalScopeResourceException {
@@ -178,6 +173,10 @@ class IndexUnavailableException extends GlobalScopeResourceException {
 }
 
 class ResourceCreationException extends GlobalScopeResourceException {
+
+	new(String message, Throwable cause) {
+		super(message, cause)
+	}
 
 	new(String message) {
 		super(message)

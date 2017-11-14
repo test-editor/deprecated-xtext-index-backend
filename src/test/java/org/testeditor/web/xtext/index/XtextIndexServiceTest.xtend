@@ -20,7 +20,7 @@ class XtextIndexServiceTest {
 	var Injector injector
 
 	@Before
-	def void metamodelMustBeKnown() {
+	def void setupXtextInjector() {
 		injector = new XtextStandaloneSetup().createInjectorAndDoEMFRegistration
 	}
 
@@ -58,7 +58,7 @@ class XtextIndexServiceTest {
 		val eReferenceURI = EcoreUtil.getURI(XtextPackage.eINSTANCE.grammar_UsedGrammars)
 		
 		// when
-		val ePackage = EPackage.Registry.INSTANCE.getEPackage(eReferenceURI.trimFragment().toString())
+		val ePackage = EPackage.Registry.INSTANCE.getEPackage(eReferenceURI.trimFragment.toString)
 		val actualEObject = ePackage.eResource.getEObject(eReferenceURI.fragment)
 		
 		

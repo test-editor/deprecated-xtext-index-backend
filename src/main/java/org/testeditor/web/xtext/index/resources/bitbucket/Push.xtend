@@ -29,7 +29,7 @@ import static javax.ws.rs.core.Response.Status.*
 import static javax.ws.rs.core.Response.status
 
 /**
- * Minimal Endpoint for BitBucket Webhook Push Events.
+ * Endpoint for BitBucket Webhook Push Events.
  * 
  * Payload see https://confluence.atlassian.com/bitbucket/event-payloads-740262817.html 
  */
@@ -65,7 +65,6 @@ class Push {
 	def boolean runPush(String payload) {
 		val objectMapper = new ObjectMapper
 		val node = objectMapper.readValue(payload, JsonNode)
-		logger.info("Push.push received with payload='{}'", payload)
 		val actorNode = node.get("actor")
 		val username = actorNode.get("username").asText
 		val reportEvent = new RepoEvent(username, node)

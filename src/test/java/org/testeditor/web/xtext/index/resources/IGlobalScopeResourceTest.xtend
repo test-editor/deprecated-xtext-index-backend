@@ -32,8 +32,11 @@ import static org.assertj.core.api.Assertions.assertThat
  * endpoint.
  *
  * The test uses the Xtext language as illustrative example.
+ * 
+ * The value of this test is the working test setup in the face of guice issues 
+ * using the ResourceTestRule as testbed (instead of more heavyweight tests using
+ * the DropwizardAppRule)!
  */
-@Ignore
 class IGlobalScopeResourceTest {
 
 	/**

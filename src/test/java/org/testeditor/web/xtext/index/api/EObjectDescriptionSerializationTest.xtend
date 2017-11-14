@@ -30,10 +30,10 @@ class EObjectDescriptionSerializationTest {
 	}
 
 	def static registerSerializers() {
-		val customSerializerModule = new SimpleModule
-		customSerializerModule.addSerializer(IEObjectDescription, new EObjectDescriptionSerializer())
-		customSerializerModule.addDeserializer(IEObjectDescription,
-			new EObjectDescriptionDeserializer())
+		val customSerializerModule = new SimpleModule => [
+			addSerializer(IEObjectDescription, new EObjectDescriptionSerializer)
+			addDeserializer(IEObjectDescription, new EObjectDescriptionDeserializer)
+		]
 		mapper.registerModule(customSerializerModule)
 	}
 
@@ -78,8 +78,8 @@ class EObjectDescriptionSerializationTest {
 			assertThat(qualifiedName).isEqualTo(expected.qualifiedName)
 		]
 	}
-	
-		@Test
+
+	@Test
 	def void shouldSerializeListToJSON() throws Exception {
 		// given
 		val sampleEObject = XtextFactory.eINSTANCE.createGrammar
@@ -87,9 +87,9 @@ class EObjectDescriptionSerializationTest {
 
 		val expected = '''
 		[ {
-		  "eObjectURI" : "«descriptions.get(0).EObjectURI»",
-		  "uri" : "«EcoreUtil.getURI(descriptions.get(0).EClass)»",
-		  "fullyQualifiedName" : "«descriptions.get(0).qualifiedName.toString»"
+		  "eObjectURI" : "«descriptions.head.EObjectURI»",
+		  "uri" : "«EcoreUtil.getURI(descriptions.head.EClass)»",
+		  "fullyQualifiedName" : "«descriptions.head.qualifiedName.toString»"
 		} ]'''
 
 		// when
@@ -98,7 +98,7 @@ class EObjectDescriptionSerializationTest {
 		// then
 		assertThat(actual).isEqualTo(expected)
 	}
-	
+
 	@Test
 	def void shouldDeserializeListFromJSON() throws Exception {
 		// given
@@ -107,7 +107,9 @@ class EObjectDescriptionSerializationTest {
 		val expected = EObjectDescription.create("sampleEObject", sampleEObject)
 
 		// when
-		val actual = sampleEObjectDescription.<List<IEObjectDescription>>readValue(new TypeReference<List<IEObjectDescription>>(){})
+		val actual = sampleEObjectDescription.<List<IEObjectDescription>>readValue(
+			new TypeReference<List<IEObjectDescription>>() {
+			})
 
 		// then
 		assertThat(actual.head).satisfies [

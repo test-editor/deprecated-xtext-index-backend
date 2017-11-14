@@ -46,7 +46,7 @@ class GitServiceTest extends RepositoryTestCase {
 
 		// then
 		assertThat(differences).hasSize(1)
-		differences.get(0) => [
+		differences.head => [
 			assertThat(changeType).isEqualTo(ChangeType.MODIFY)
 			assertThat(oldPath).isEqualTo("README.md")
 			assertThat(newPath).isEqualTo("README.md")

@@ -1,4 +1,4 @@
-package org.testeditor.web.xtext.index.resources.bitbucket
+package org.testeditor.web.xtext.index
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
@@ -17,8 +17,8 @@ import javax.ws.rs.client.Invocation
 import javax.ws.rs.core.Response
 import org.eclipse.emf.common.util.URI
 import org.eclipse.jgit.junit.JGitTestUtil
+import org.eclipse.xtend.lib.annotations.Accessors
 import org.eclipse.xtext.resource.IEObjectDescription
-import org.eclipse.xtext.scoping.IGlobalScopeProvider
 import org.junit.After
 import org.junit.Before
 import org.junit.ClassRule
@@ -28,9 +28,6 @@ import org.testeditor.aml.dsl.AmlStandaloneSetup
 import org.testeditor.tcl.dsl.TclStandaloneSetup
 import org.testeditor.tsl.dsl.TslRuntimeModule
 import org.testeditor.tsl.dsl.web.TslWebSetup
-import org.testeditor.web.xtext.index.XtextIndex
-import org.testeditor.web.xtext.index.XtextIndexApplication
-import org.testeditor.web.xtext.index.XtextIndexModule
 import org.testeditor.web.xtext.index.serialization.EObjectDescriptionDeserializer
 
 import static io.dropwizard.testing.ConfigOverride.config
@@ -39,6 +36,7 @@ class AbstractIntegrationTest {
 
 	public static class TestXtextIndexApplication extends XtextIndexApplication {
 		val injector = Guice.createInjector(Modules.override(new TslRuntimeModule).with(new XtextIndexModule))
+		@Accessors(PUBLIC_GETTER)
 		val index = injector.getInstance(XtextIndex) // construct index with language injector
 
 		override getLanguageSetups() {
@@ -58,7 +56,7 @@ class AbstractIntegrationTest {
 	public val dropwizardRule = new DropwizardAppRule(TestXtextIndexApplication,
 		ResourceHelpers.resourceFilePath("config.yml"), #[
 			config('repoLocation', temporaryFolder.root.absolutePath),
-			config('logging.level', 'TRACE')
+			config('logging.level', 'INFO')
 		])
 
 	protected var ObjectMapper objectMapper
@@ -73,11 +71,10 @@ class AbstractIntegrationTest {
 	protected def void addFileToIndex(String fileName, String content) {
 		val file = new File(temporaryFolder.root, fileName)
 		JGitTestUtil.write(file, content)
-		(dropwizardRule.application as TestXtextIndexApplication).indexInstance.add(
-			URI.createFileURI(file.absolutePath))
+		(dropwizardRule.application as TestXtextIndexApplication).index.add(URI.createFileURI(file.absolutePath))
 	}
 
-	def addSeparateMacroCollectionToIndexTimes(int size) {
+	def void addSeparateMacroCollectionToIndexTimes(int size) {
 		for (counter : 0 ..< size) {
 			addFileToIndex(
 				'''pack/MacroLib«counter».tml''',

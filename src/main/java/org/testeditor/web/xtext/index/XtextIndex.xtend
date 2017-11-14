@@ -13,6 +13,9 @@ import org.slf4j.LoggerFactory
 
 import static org.eclipse.xtext.resource.impl.ResourceDescriptionsData.ResourceSetAdapter.installResourceDescriptionsData
 
+/**
+ * index that holds all xtext (langauge) relevant resources of this project
+ */
 @Singleton
 class XtextIndex extends ResourceSetBasedResourceDescriptions {
 

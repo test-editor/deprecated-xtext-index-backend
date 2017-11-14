@@ -7,7 +7,7 @@ import org.testeditor.tcl.dsl.TclStandaloneSetup
 
 import static org.assertj.core.api.Assertions.assertThat
 
-class FileBasedXtextIndexFillerTest extends InjectionBasedAbstractTest {
+class FileBasedXtextIndexFillerTest extends AbstractTestInjectingMembers {
 
 	@Inject
 	var FileBasedXtextIndexFiller indexFiller // class under test
@@ -41,4 +41,5 @@ class FileBasedXtextIndexFillerTest extends InjectionBasedAbstractTest {
 		// then
 		assertThat(allRejected).isTrue
 	}
+	
 }

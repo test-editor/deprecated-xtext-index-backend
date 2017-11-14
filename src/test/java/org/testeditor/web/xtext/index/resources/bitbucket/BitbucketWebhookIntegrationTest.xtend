@@ -15,9 +15,7 @@ package org.testeditor.web.xtext.index.resources.bitbucket
 
 import javax.ws.rs.client.Entity
 import org.junit.Test
-import org.junit.rules.TemporaryFolder
-import org.testeditor.tsl.dsl.web.TslWebSetup
-import org.testeditor.web.xtext.index.XtextIndexApplication
+import org.testeditor.web.xtext.index.AbstractIntegrationTest
 
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST
 import static javax.ws.rs.core.Response.Status.NO_CONTENT

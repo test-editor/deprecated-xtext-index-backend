@@ -13,6 +13,9 @@ import static org.testeditor.web.xtext.index.serialization.EObjectDescriptionSer
 import static org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerialization.QUALIFIED_NAME__FIELD_NAME
 import static org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerialization.URI__FIELD_NAME
 
+/**
+ * Serializer for EObjectDescription to Json
+ */
 class EObjectDescriptionSerializer extends StdSerializer<IEObjectDescription> {
 
 	new() {
@@ -21,13 +24,16 @@ class EObjectDescriptionSerializer extends StdSerializer<IEObjectDescription> {
 
 	override serialize(IEObjectDescription eObjectDescription, JsonGenerator generator,
 		SerializerProvider serializers) throws IOException, JsonProcessingException {
-		generator.useDefaultPrettyPrinter
-		generator.writeStartObject
-		generator.writeStringField(EOBJECT_URI__FIELD_NAME, eObjectDescription.EObjectURI.toString)
-		generator.writeStringField(URI__FIELD_NAME, EcoreUtil.getURI(eObjectDescription.EClass).toString)
-		generator.writeStringField(QUALIFIED_NAME__FIELD_NAME,
-			eObjectDescription.qualifiedName.segments.join(QUALIFIED_NAME__DELIMITER))
-		generator.writeEndObject
+
+		generator => [
+			useDefaultPrettyPrinter
+			writeStartObject
+			writeStringField(EOBJECT_URI__FIELD_NAME, eObjectDescription.EObjectURI.toString)
+			writeStringField(URI__FIELD_NAME, EcoreUtil.getURI(eObjectDescription.EClass).toString)
+			writeStringField(QUALIFIED_NAME__FIELD_NAME,
+				eObjectDescription.qualifiedName.segments.join(QUALIFIED_NAME__DELIMITER))
+			writeEndObject
+		]
 	}
 
 }

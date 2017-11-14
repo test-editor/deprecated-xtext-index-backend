@@ -6,7 +6,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil
 import org.eclipse.xtext.XtextPackage
 import org.junit.Test
 import org.testeditor.tcl.TclPackage
-import org.testeditor.web.xtext.index.resources.bitbucket.AbstractIntegrationTest
+import org.testeditor.web.xtext.index.AbstractIntegrationTest
 
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR
 import static javax.ws.rs.core.Response.Status.OK
@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat
 class GlobalScopeResourceIntegrationTest extends AbstractIntegrationTest {
 
 	val macroCollectionCountForLargeIndex = 100
-	val tclMacroCollectionRefContext = '''
+	val tclReferrerContext = '''
 		package pack
 		
 		# Context
@@ -38,14 +38,44 @@ class GlobalScopeResourceIntegrationTest extends AbstractIntegrationTest {
 	'''
 
 	val macroCollectionReference = EcoreUtil.getURI(TclPackage.eINSTANCE.macroTestStepContext_MacroCollection).toString
+	val amlComponentReference = EcoreUtil.getURI(TclPackage.eINSTANCE.componentTestStepContext_Component).toString
+	
+	@Test
+	def void amlTest() {
+		addFileToIndex('GreetingApplication.aml', '''			
+			import org.testeditor.fixture.swing.*
+			
+			component GreetingApplication is Application {
+				
+				element Input is Text {
+					locator = "text.input"
+				}
+			
+			}
+			''')
 
+		// when
+		val response = postGlobalScopeRequest(tclReferrerContext, amlComponentReference, 'tcl',
+			'pack/context.tcl')
+		val payload = deserializeIEObjectDescriptions(response.entity as InputStream)
+
+		// then
+		assertThat(response.status).isEqualTo(OK.statusCode)
+		assertThat(payload).satisfies [
+			assertThat(it).isInstanceOf(List)
+			assertThat(size).isEqualTo(1)
+			assertThat(head.getEClass.name).isEqualTo("Component")
+			assertThat(head.qualifiedName.toString).isEqualTo("GreetingApplication")
+		]
+	}
+	
 	@Test
 	def void macroReferencedByTcl() {
 		// given
 		addFileToIndex(tmlUri, tml)
 
 		// when
-		val response = postGlobalScopeRequest(tclMacroCollectionRefContext, macroCollectionReference, 'tcl',
+		val response = postGlobalScopeRequest(tclReferrerContext, macroCollectionReference, 'tcl',
 			'pack/context.tcl')
 		val payload = deserializeIEObjectDescriptions(response.entity as InputStream)
 
@@ -91,7 +121,7 @@ class GlobalScopeResourceIntegrationTest extends AbstractIntegrationTest {
 		addSeparateMacroCollectionToIndexTimes(macroCollectionCountForLargeIndex)
 
 		// when
-		val response = postGlobalScopeRequest(tclMacroCollectionRefContext, macroCollectionReference, 'tcl',
+		val response = postGlobalScopeRequest(tclReferrerContext, macroCollectionReference, 'tcl',
 			'pack/context.tcl')
 		val payload = deserializeIEObjectDescriptions(response.entity as InputStream)
 
@@ -112,7 +142,7 @@ class GlobalScopeResourceIntegrationTest extends AbstractIntegrationTest {
 		val reference = EcoreUtil.getURI(XtextPackage.eINSTANCE.grammar_UsedGrammars).toString
 		val contentType = "tsl"
 		val contextURI = "example.tsl"
-		val context = tclMacroCollectionRefContext
+		val context = tclReferrerContext
 
 		// when
 		val response = postGlobalScopeRequest(context, reference, contentType, contextURI)
@@ -127,7 +157,7 @@ class GlobalScopeResourceIntegrationTest extends AbstractIntegrationTest {
 		val reference = EcoreUtil.getURI(XtextPackage.eINSTANCE.grammar_UsedGrammars).toString
 		val contentType = null
 		val contextURI = "example.tsl"
-		val context = tclMacroCollectionRefContext
+		val context = tclReferrerContext
 
 		// when
 		val response = postGlobalScopeRequest(context, reference, contentType, contextURI)
@@ -142,7 +172,7 @@ class GlobalScopeResourceIntegrationTest extends AbstractIntegrationTest {
 		val reference = EcoreUtil.getURI(XtextPackage.eINSTANCE.grammar_UsedGrammars).toString
 		val contentType = null
 		val contextURI = null
-		val context = tclMacroCollectionRefContext
+		val context = tclReferrerContext
 
 		// when
 		val response = postGlobalScopeRequest(context, reference, contentType, contextURI)
@@ -150,7 +180,7 @@ class GlobalScopeResourceIntegrationTest extends AbstractIntegrationTest {
 		// then
 		assertThat(response.status).isEqualTo(INTERNAL_SERVER_ERROR.statusCode)
 		assertThat((response.entity as InputStream).deserializeException.message).isEqualTo(
-			"No context URI was provided (URI is null).")
+			"Failed to create resource for URI '' of type ''.")
 	}
 
 	@Test
@@ -159,7 +189,7 @@ class GlobalScopeResourceIntegrationTest extends AbstractIntegrationTest {
 		val reference = EcoreUtil.getURI(XtextPackage.eINSTANCE.grammar_UsedGrammars).toString
 		val contentType = "tsl"
 		val contextURI = ""
-		val context = tclMacroCollectionRefContext
+		val context = tclReferrerContext
 
 		// when
 		val response = postGlobalScopeRequest(context, reference, contentType, contextURI)
