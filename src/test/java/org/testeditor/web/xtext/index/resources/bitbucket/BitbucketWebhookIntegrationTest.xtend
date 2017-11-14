@@ -26,7 +26,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import org.testeditor.tsl.dsl.web.TslWebSetup
-import org.testeditor.web.xtext.index.XtextIndex
 import org.testeditor.web.xtext.index.XtextIndexApplication
 
 import static io.dropwizard.testing.ConfigOverride.config
@@ -42,8 +41,8 @@ class BitbucketWebhookIntegrationTest {
 			return #[]
 		}
 
-		override getIndexInstance() {
-			return new TslWebSetup().createInjector.getInstance(XtextIndex) // construct index with language injector
+		override getGuiceInjector() {
+			return new TslWebSetup().createInjector // construct index with language injector
 		}
 
 	}

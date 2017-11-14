@@ -47,10 +47,9 @@ dependencies {
     compile "io.dropwizard:dropwizard-core:$versions.dropwizard"
     compile "org.eclipse.jgit:org.eclipse.jgit:$versions.jgit"
 	compile "org.testeditor.web:org.testeditor.web.dropwizard:$versions.testEditorDropwizard"
-	// compile "org.testeditor.web:org.testeditor.web.dropwizard.xtext:$versions.testEditorDropwizard"
 
-    testCompile 'org.testeditor:org.testeditor.tsl.dsl.web:1.7.0'
-    testCompile 'org.testeditor:org.testeditor.dsl.common.model:1.7.0'
+    testCompile 'org.testeditor:org.testeditor.tsl.dsl.web:1.8.0'
+    testCompile 'org.testeditor:org.testeditor.dsl.common.model:1.8.0'
     testCompile 'junit:junit:4.12'
     testCompile "io.dropwizard:dropwizard-testing:$versions.dropwizard"
     testCompile 'org.assertj:assertj-core:3.8.0'
