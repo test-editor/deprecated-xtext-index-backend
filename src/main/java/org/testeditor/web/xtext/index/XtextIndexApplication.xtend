@@ -14,21 +14,23 @@
 package org.testeditor.web.xtext.index
 
 import com.fasterxml.jackson.databind.module.SimpleModule
-import com.google.inject.Guice
 import com.google.inject.Injector
-import io.dropwizard.Application
 import io.dropwizard.setup.Bootstrap
 import io.dropwizard.setup.Environment
 import java.io.File
+import java.util.List
 import javax.inject.Inject
+import org.eclipse.jgit.api.errors.GitAPIException
+import org.eclipse.xtext.ISetup
 import org.eclipse.xtext.resource.IEObjectDescription
 import org.slf4j.LoggerFactory
+import org.testeditor.web.dropwizard.DropwizardApplication
 import org.testeditor.web.xtext.index.persistence.GitService
 import org.testeditor.web.xtext.index.resources.bitbucket.Push
 import org.testeditor.web.xtext.index.serialization.EObjectDescriptionDeserializer
 import org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerializer
 
-class XtextIndexApplication extends Application<XtextIndexConfiguration> {
+abstract class XtextIndexApplication extends DropwizardApplication<XtextIndexConfiguration> {
 
 	protected static val logger = LoggerFactory.getLogger(XtextIndexApplication)
 
@@ -36,16 +38,16 @@ class XtextIndexApplication extends Application<XtextIndexConfiguration> {
 	@Inject GitService gitService
 	@Inject FileBasedXtextIndexFiller indexFiller
 
-	def static main(String[] args) throws Exception {
-		new XtextIndexApplication().run(args)
-	}
+	private XtextIndex indexInstance
 
 	override getName() {
 		return "xtext-index-service"
 	}
 
 	override initialize(Bootstrap<XtextIndexConfiguration> bootstrap) {
+		super.initialize(bootstrap)
 		registerCustomEObjectSerializer(bootstrap)
+		languageSetups.forEach[createInjectorAndDoEMFRegistration]
 	}
 
 	private def registerCustomEObjectSerializer(Bootstrap<XtextIndexConfiguration> bootstrap) {
@@ -55,38 +57,37 @@ class XtextIndexApplication extends Application<XtextIndexConfiguration> {
 		bootstrap.objectMapper.registerModule(customSerializerModule)
 	}
 
-	/**
-	 * please override and provide own (language dependent) injected xtext index instance
-	 */
-	protected def XtextIndex getIndexInstance() {
-		val injector = Guice.createInjector(#[new XtextIndexModule])
-		return injector.getInstance(XtextIndex)
-	}
-
-	/**
-	 * override and provide own injector
-	 */
-	protected def Injector getGuiceInjector() {
-		Guice.createInjector
-	}
-
-	private def initializeWithRepository(File repository, XtextIndexConfiguration configuration) {
-		try {
-			gitService.init(repository, configuration.repoUrl)
-			indexFiller.fillWithFileRecursively(indexInstance, repository)
-		} catch (Exception e) {
-			logger.error('''Initialization based on repositor='«repository.name»' failed with exceptions.''', e)
-		}
-	}
-
 	override run(XtextIndexConfiguration configuration, Environment environment) {
-		guiceInjector.injectMembers(this)
-		val repoLocationFile = new File(configuration.repoLocation)
+		super.run(configuration, environment)
+		configureServices(configuration, environment)
+	}
 
-		initializeWithRepository(repoLocationFile, configuration)
+	abstract protected def Injector getGuiceInjector()
 
+	abstract protected def List<ISetup> getLanguageSetups()
+
+	private def XtextIndex getIndexInstance() {
+		if (this.indexInstance === null) {
+			this.indexInstance = guiceInjector.getInstance(XtextIndex)
+		}
+		return this.indexInstance
+	}
+
+	/**
+	 * Adds the Xtext servlet and configures a session handler.
+	 */
+	protected def void configureServices(XtextIndexConfiguration configuration, Environment environment) {
+		try {
+			gitService.init(new File(configuration.repoLocation), configuration.repoUrl)
+			indexFiller.fillWithFileRecursively(getIndexInstance, new File(configuration.repoLocation))
+		} catch (GitAPIException e) {
+			logger.
+				error('''Failed repo initialization with repoLocation='«configuration.repoLocation» and repoUrl='«configuration.repoUrl»'. ''',
+					e)
+		}
 		environment.jersey.register(new Push => [
-			callback = pushEventIndexCallback => [index = indexInstance]
+			callback = pushEventIndexCallback => [index = getIndexInstance]
 		])
 	}
+
 }

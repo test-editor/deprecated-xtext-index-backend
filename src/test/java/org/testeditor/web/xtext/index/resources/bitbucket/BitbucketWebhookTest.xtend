@@ -40,7 +40,7 @@ class BitbucketWebhookTest {
 		val expectedEvent = new RepoEvent(expectedUser, json)
 
 		// when
-		pushHandler.push(jsonString)
+		pushHandler.runPush(jsonString)
 
 		// then
 		callbackMock.verify.call(expectedEvent)

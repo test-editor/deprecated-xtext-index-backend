@@ -13,15 +13,19 @@
 
 package org.testeditor.web.xtext.index.resources.bitbucket
 
+import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
 import io.dropwizard.testing.ResourceHelpers
 import io.dropwizard.testing.junit.DropwizardAppRule
 import java.io.File
 import javax.ws.rs.client.Entity
+import javax.ws.rs.client.Invocation
 import org.junit.After
 import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import org.testeditor.tsl.dsl.web.TslWebSetup
 import org.testeditor.web.xtext.index.XtextIndexApplication
 
 import static io.dropwizard.testing.ConfigOverride.config
@@ -31,11 +35,23 @@ import static org.assertj.core.api.Assertions.assertThat
 
 class BitbucketWebhookIntegrationTest {
 
+	public static class TestXtextIndexApplication extends XtextIndexApplication {
+
+		override getLanguageSetups() {
+			return #[]
+		}
+
+		override getGuiceInjector() {
+			return new TslWebSetup().createInjector // construct index with language injector
+		}
+
+	}
+
 	@ClassRule
 	public static val temporaryFolder = new TemporaryFolder
 
 	@Rule
-	public val dropwizardRule = new DropwizardAppRule(XtextIndexApplication,
+	public val dropwizardRule = new DropwizardAppRule(TestXtextIndexApplication,
 		ResourceHelpers.resourceFilePath("config.yml"), #[
 			config('repoLocation', temporaryFolder.root.absolutePath)
 		])
@@ -55,7 +71,8 @@ class BitbucketWebhookIntegrationTest {
 		// when
 		val response = client //
 		.target('''http://localhost:«dropwizardRule.localPort»/xtext/index/webhook/bitbucket/push''') //
-		.request() //
+		.request //
+		.authHeader //
 		.post(Entity.json('''{ "actor" : { "username": "xyz" }, "repository": { }, "push": { } }'''))
 
 		// then
@@ -70,7 +87,8 @@ class BitbucketWebhookIntegrationTest {
 		// when
 		val response = client //
 		.target('''http://localhost:«dropwizardRule.localPort»/xtext/index/webhook/bitbucket/push''') //
-		.request() //
+		.request //
+		.authHeader //
 		.post(Entity.json('''{ "actor" : '''))
 
 		// then
@@ -85,15 +103,30 @@ class BitbucketWebhookIntegrationTest {
 		// when
 		val response = client //
 		.target('''http://localhost:«dropwizardRule.localPort»/xtext/index/webhook/bitbucket/push''') //
-		.request() //
+		.request //
+		.authHeader //
 		.post(Entity.json('''{ "actor" : "some" }''')) // incomplete, actor should be an object holding username etc.
 		// then
 		assertThat(response.status).isEqualTo(BAD_REQUEST.statusCode)
 	}
 
+	private def String getToken() {
+		val builder = JWT.create => [
+			withClaim('id', 'john.doe')
+			withClaim('name', 'John Doe')
+			withClaim('email', 'john@example.org')
+		]
+		return builder.sign(Algorithm.HMAC256("secret"))
+	}
+
+	private def Invocation.Builder authHeader(Invocation.Builder builder) {
+		builder.header('Authorization', '''Bearer «token»''')
+		return builder
+	}
+
 	private def void recursiveDelete(File file, boolean deleteThis) {
 		file.listFiles?.forEach[recursiveDelete(true)]
-		if(deleteThis) {
+		if (deleteThis) {
 			file.delete
 		}
 	}

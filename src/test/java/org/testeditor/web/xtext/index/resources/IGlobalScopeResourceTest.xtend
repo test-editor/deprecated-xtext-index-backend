@@ -19,12 +19,14 @@ import org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerializer
 
 import static org.assertj.core.api.Assertions.assertThat
 import org.eclipse.xtext.naming.QualifiedName
+import org.junit.Ignore
 
 /**
  * Tests whether the REST interface can be successfully invoked via REST.
  * 
  * The test uses the Xtext language as illustrative example.
  */
+@Ignore
 class IGlobalScopeResourceTest {
 
 	private static val resourceUnderTest = new DummyGlobalScopeResource
