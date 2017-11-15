@@ -20,6 +20,9 @@ import static org.testeditor.web.xtext.index.serialization.EObjectDescriptionSer
 import static org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerialization.QUALIFIED_NAME__FIELD_NAME
 import static org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerialization.URI__FIELD_NAME
 
+/**
+ * Deserializer for Json to EObjectDescription
+ */
 class EObjectDescriptionDeserializer extends StdDeserializer<IEObjectDescription> {
 
 	new() {

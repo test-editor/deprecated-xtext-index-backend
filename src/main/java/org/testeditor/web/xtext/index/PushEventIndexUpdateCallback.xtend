@@ -10,6 +10,9 @@ import org.testeditor.web.xtext.index.resources.PushEventGitInfos
 import org.testeditor.web.xtext.index.resources.RepoEvent
 import org.testeditor.web.xtext.index.resources.RepoEventCallback
 
+/**
+ * Callback to use information of the push event to update the xtext index accordingly
+ */
 class PushEventIndexUpdateCallback implements RepoEventCallback {
 
 	protected static val logger = LoggerFactory.getLogger(PushEventGitInfos)
@@ -19,7 +22,7 @@ class PushEventIndexUpdateCallback implements RepoEventCallback {
 	@Inject GitService gitService
 
 	@Accessors(PUBLIC_SETTER)
-	XtextIndex index
+	XtextIndex index // is set later since it must be created using the xtext injection (whereas others are injected via dropwizard)
 
 	override call(RepoEvent event) {
 		if (gitInfos.isPushEvent(event)) {

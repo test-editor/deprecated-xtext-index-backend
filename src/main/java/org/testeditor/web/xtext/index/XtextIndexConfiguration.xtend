@@ -9,6 +9,9 @@ public class XtextIndexConfiguration extends Configuration {
 	@NotEmpty var String repoLocation
 	@NotEmpty var String repoUrl
 
+	/**
+	 * file location used as root for the local repo
+	 */
 	@JsonProperty
 	def getRepoLocation() {
 		return repoLocation
@@ -19,6 +22,9 @@ public class XtextIndexConfiguration extends Configuration {
 		this.repoLocation = repoLocation
 	}
 
+	/**
+	 * url to git repository that is to be used for this index
+	 */
 	@JsonProperty
 	def getRepoUrl() {
 		return repoUrl

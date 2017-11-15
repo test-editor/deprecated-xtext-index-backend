@@ -13,6 +13,9 @@ import org.slf4j.LoggerFactory
 
 import static org.eclipse.xtext.resource.impl.ResourceDescriptionsData.ResourceSetAdapter.installResourceDescriptionsData
 
+/**
+ * index that holds all xtext (language) relevant resources of this project
+ */
 @Singleton
 class XtextIndex extends ResourceSetBasedResourceDescriptions {
 
@@ -102,14 +105,18 @@ class XtextIndex extends ResourceSetBasedResourceDescriptions {
 	}
 
 	private def void addToIndex(Resource resource) {
-		val uri = resource.URI
 		val resourceDescription = resourceDescriptionManager.getResourceDescription(resource)
 		if (resourceDescription !== null) {
+			val uri = resource.URI
 			synchronized (data) {
 				data.addDescription(uri, resourceDescription)
 			}
-			logger.trace("Adding description for uri='{}'. Exported objects='{}'", uri,
-				resourceDescription.exportedObjects)
+			if (logger.traceEnabled) {
+				val exportedObjects = resourceDescription.exportedObjects.map [
+					toString + " (" + EClass.name + ")"
+				]
+				logger.trace('''Adding description for uri='«uri»'. Exported objects='«exportedObjects»'.''')
+			}
 		}
 	}
 

@@ -23,13 +23,19 @@ import javax.inject.Inject
 import org.eclipse.jgit.api.errors.GitAPIException
 import org.eclipse.xtext.ISetup
 import org.eclipse.xtext.resource.IEObjectDescription
+import org.eclipse.xtext.scoping.IGlobalScopeProvider
 import org.slf4j.LoggerFactory
 import org.testeditor.web.dropwizard.DropwizardApplication
 import org.testeditor.web.xtext.index.persistence.GitService
+import org.testeditor.web.xtext.index.resources.GlobalScopeResource
 import org.testeditor.web.xtext.index.resources.bitbucket.Push
 import org.testeditor.web.xtext.index.serialization.EObjectDescriptionDeserializer
 import org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerializer
 
+/**
+ * Abstract application to be inherited by actual dropwizard index application 
+ * that adds information about the actually used languages for this index
+ */
 abstract class XtextIndexApplication extends DropwizardApplication<XtextIndexConfiguration> {
 
 	protected static val logger = LoggerFactory.getLogger(XtextIndexApplication)
@@ -38,7 +44,7 @@ abstract class XtextIndexApplication extends DropwizardApplication<XtextIndexCon
 	@Inject GitService gitService
 	@Inject FileBasedXtextIndexFiller indexFiller
 
-	private XtextIndex indexInstance
+	private XtextIndex indexInstance // created with xtext language injector
 
 	override getName() {
 		return "xtext-index-service"
@@ -59,11 +65,20 @@ abstract class XtextIndexApplication extends DropwizardApplication<XtextIndexCon
 
 	override run(XtextIndexConfiguration configuration, Environment environment) {
 		super.run(configuration, environment)
+		initializeLocalRepository(configuration)
 		configureServices(configuration, environment)
 	}
 
+	/**
+	 * Override and create injector from xtext language setup
+	 * 
+	 * This injector is used to get instances of the index and global scope provider
+	 */
 	abstract protected def Injector getGuiceInjector()
 
+	/**
+	 * return the list of actual xtext languages for this index
+	 */
 	abstract protected def List<ISetup> getLanguageSetups()
 
 	private def XtextIndex getIndexInstance() {
@@ -73,21 +88,25 @@ abstract class XtextIndexApplication extends DropwizardApplication<XtextIndexCon
 		return this.indexInstance
 	}
 
-	/**
-	 * Adds the Xtext servlet and configures a session handler.
-	 */
-	protected def void configureServices(XtextIndexConfiguration configuration, Environment environment) {
+	protected def IGlobalScopeProvider getGlobalScopeProvider(){
+        return guiceInjector.getInstance(IGlobalScopeProvider)
+    }
+
+	private def initializeLocalRepository(XtextIndexConfiguration configuration) {
 		try {
-			gitService.init(new File(configuration.repoLocation), configuration.repoUrl)
-			indexFiller.fillWithFileRecursively(getIndexInstance, new File(configuration.repoLocation))
+			val root = new File(configuration.repoLocation)
+			gitService.init(root, configuration.repoUrl)
+			indexFiller.fillWithFileRecursively(indexInstance, root)
 		} catch (GitAPIException e) {
-			logger.
-				error('''Failed repo initialization with repoLocation='«configuration.repoLocation» and repoUrl='«configuration.repoUrl»'. ''',
-					e)
-		}
+			logger.error('''Failed repo initialization with repoLocation='«configuration.repoLocation» and repoUrl='«configuration.repoUrl»'. ''', e)
+		}		
+	}
+
+	protected def void configureServices(XtextIndexConfiguration configuration, Environment environment) {
 		environment.jersey.register(new Push => [
 			callback = pushEventIndexCallback => [index = getIndexInstance]
 		])
+		environment.jersey.register(new GlobalScopeResource(globalScopeProvider, getIndexInstance))
 	}
 
 }
