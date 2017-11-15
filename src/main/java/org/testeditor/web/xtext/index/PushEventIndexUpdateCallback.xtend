@@ -22,7 +22,7 @@ class PushEventIndexUpdateCallback implements RepoEventCallback {
 	@Inject GitService gitService
 
 	@Accessors(PUBLIC_SETTER)
-	XtextIndex index // used by object construction to put actual index instance into this callback
+	XtextIndex index // is set later since it must be created using the xtext injection (whereas others are injected via dropwizard)
 
 	override call(RepoEvent event) {
 		if (gitInfos.isPushEvent(event)) {

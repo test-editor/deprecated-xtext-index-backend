@@ -18,23 +18,23 @@ class GitDiffXtextIndexTranslator {
 			gitDiffs.forEach [
 				switch (changeType) {
 					case ADD: {
-						logger.info('''Adding file='«newPath»' to index based on changeType='«changeType.name»'.''')
+						logger.trace("Adding file='{}' to index based on changeType='{}'.", newPath, changeType.name)
 						index.add(URI.createFileURI(newPath))
 					}
 					case COPY: {
-						logger.info('''Adding file='«newPath»' to index based on changeType='«changeType.name»'.''')
+						logger.trace("Adding file='{}' to index based on changeType='{}'.", newPath, changeType.name)
 						index.add(URI.createFileURI(newPath))
 					}
 					case DELETE: {
-						logger.info('''Removing file='«oldPath»' from index based on changeType='«changeType.name»'.''')
+						logger.trace("Removing file='{}' from index based on changeType='{}'.", oldPath, changeType.name)
 						index.remove(URI.createFileURI(oldPath))
 					}
 					case MODIFY: {
-						logger.info('''Updating file='«oldPath»' within index based on changeType='«changeType.name»'.''')
+						logger.trace("Updating file='{}' within index based on changeType='{}'.", oldPath, changeType.name)
 						index.update(URI.createFileURI(oldPath))
 					}
 					case RENAME: {
-						logger.info('''Removing file='«oldPath»' index, adding same file='«newPath»' based on changeType='«changeType.name»'.''')
+						logger.trace("Removing file='{}' index, adding same file='{}' based on changeType='{}'.", oldPath, newPath, changeType.name)
 						index.remove(URI.createFileURI(oldPath))
 						index.add(URI.createFileURI(newPath))
 					}

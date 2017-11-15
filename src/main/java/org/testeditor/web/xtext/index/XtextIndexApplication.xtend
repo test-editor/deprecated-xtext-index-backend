@@ -70,7 +70,7 @@ abstract class XtextIndexApplication extends DropwizardApplication<XtextIndexCon
 	}
 
 	/**
-	 * Override an create injector from xtext language setup
+	 * Override and create injector from xtext language setup
 	 * 
 	 * This injector is used to get instances of the index and global scope provider
 	 */

@@ -52,7 +52,7 @@ dependencies {
 
     testCompile "org.testeditor:org.testeditor.tsl.dsl.web:$versions.testEditorLanguage"
     testCompile ("org.testeditor:org.testeditor.tcl.dsl:$versions.testEditorLanguage") {
-        exclude group: "org.apache.logging.log4j"
+        exclude group: "org.apache.logging.log4j" // circumvents runtime problem with multiple log4j implementations
     }
 
     testCompile "org.testeditor:org.testeditor.tcl.model:$versions.testEditorLanguage"

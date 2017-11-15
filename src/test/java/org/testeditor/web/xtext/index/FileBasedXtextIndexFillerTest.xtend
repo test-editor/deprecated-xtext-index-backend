@@ -19,9 +19,7 @@ class FileBasedXtextIndexFillerTest extends AbstractTestInjectingMembers {
 
 		// when
 		val allAccepted = #['one.tcl', 'two.tcl', 'one.config', 'one.tml'] //
-		.fold(true, [ bool, filename |
-			bool && indexFiller.isIndexRelevant(new File(filename))
-		])
+		.forall[indexFiller.isIndexRelevant(new File(it))]
 
 		// then
 		assertThat(allAccepted).isTrue
@@ -34,9 +32,7 @@ class FileBasedXtextIndexFillerTest extends AbstractTestInjectingMembers {
 
 		// when
 		val allRejected = #['one.xtcl', 'two.txl', 'one', 'Jenkinsfile', 'some.java', 'other.xtend'] //
-		.fold(true, [ bool, filename |
-			bool && !indexFiller.isIndexRelevant(new File(filename))
-		])
+		.forall[!indexFiller.isIndexRelevant(new File(it))]
 
 		// then
 		assertThat(allRejected).isTrue
