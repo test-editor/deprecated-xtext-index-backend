@@ -1,2 +1,2 @@
-repoLocation: ./repo/
-repoUrl: https://github.com/test-editor/empty-or-non-existing-repo.git
+localRepoFileRoot: ./repo/
+remoteRepoUrl: https://github.com/test-editor/empty-or-non-existing-repo.git

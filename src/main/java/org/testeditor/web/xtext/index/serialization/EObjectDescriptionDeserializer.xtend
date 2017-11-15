@@ -15,10 +15,10 @@ import org.eclipse.xtext.naming.QualifiedName
 import org.eclipse.xtext.resource.IEObjectDescription
 import org.eclipse.xtext.resource.persistence.SerializableEObjectDescription
 
-import static org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerialization.EOBJECT_URI__FIELD_NAME
-import static org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerialization.QUALIFIED_NAME__DELIMITER
-import static org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerialization.QUALIFIED_NAME__FIELD_NAME
-import static org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerialization.URI__FIELD_NAME
+import static org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerializationConstants.QUALIFIED_NAME__FIELD_NAME
+import static org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerializationConstants.URI__FIELD_NAME
+import static org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerializationConstants.EOBJECT_URI__FIELD_NAME
+import static org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerializationConstants.QUALIFIED_NAME__DELIMITER
 
 /**
  * Deserializer for Json to EObjectDescription

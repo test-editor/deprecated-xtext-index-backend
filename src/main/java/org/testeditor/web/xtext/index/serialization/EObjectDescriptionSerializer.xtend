@@ -8,10 +8,10 @@ import java.io.IOException
 import org.eclipse.emf.ecore.util.EcoreUtil
 import org.eclipse.xtext.resource.IEObjectDescription
 
-import static org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerialization.EOBJECT_URI__FIELD_NAME
-import static org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerialization.QUALIFIED_NAME__DELIMITER
-import static org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerialization.QUALIFIED_NAME__FIELD_NAME
-import static org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerialization.URI__FIELD_NAME
+import static org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerializationConstants.QUALIFIED_NAME__FIELD_NAME
+import static org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerializationConstants.URI__FIELD_NAME
+import static org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerializationConstants.QUALIFIED_NAME__DELIMITER
+import static org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerializationConstants.EOBJECT_URI__FIELD_NAME
 
 /**
  * Serializer for EObjectDescription to Json

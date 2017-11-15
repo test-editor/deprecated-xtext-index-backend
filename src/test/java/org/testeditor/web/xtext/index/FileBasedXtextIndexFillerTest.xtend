@@ -26,7 +26,7 @@ class FileBasedXtextIndexFillerTest extends AbstractTestInjectingMembers {
 	}
 
 	@Test
-	def void testIrrelevant() {
+	def void testFileNamesToBeIndexIrrelevant() {
 		// given
 		new TclStandaloneSetup().createInjectorAndDoEMFRegistration
 

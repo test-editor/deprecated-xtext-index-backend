@@ -6,33 +6,33 @@ import org.hibernate.validator.constraints.NotEmpty
 
 public class XtextIndexConfiguration extends Configuration {
 
-	@NotEmpty var String repoLocation
-	@NotEmpty var String repoUrl
+	@NotEmpty var String localRepoFileRoot
+	@NotEmpty var String remoteRepoUrl
 
 	/**
 	 * file location used as root for the local repo
 	 */
 	@JsonProperty
-	def getRepoLocation() {
-		return repoLocation
+	def getLocalRepoFileRoot() {
+		return localRepoFileRoot
 	}
 
 	@JsonProperty
-	def setRepoLocation(String repoLocation) {
-		this.repoLocation = repoLocation
+	def setLocalRepoFileRoot(String localRepoFileRoot) {
+		this.localRepoFileRoot = localRepoFileRoot
 	}
 
 	/**
 	 * url to git repository that is to be used for this index
 	 */
 	@JsonProperty
-	def getRepoUrl() {
-		return repoUrl
+	def getRemoteRepoUrl() {
+		return remoteRepoUrl
 	}
 
 	@JsonProperty
-	def setRepoUrl(String repoUrl) {
-		this.repoUrl = repoUrl
+	def setRemoteRepoUrl(String remoteRepoUrl) {
+		this.remoteRepoUrl = remoteRepoUrl
 	}
 
 }

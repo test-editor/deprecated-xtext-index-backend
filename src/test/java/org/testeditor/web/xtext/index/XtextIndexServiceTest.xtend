@@ -8,7 +8,6 @@ import org.eclipse.emf.ecore.util.EcoreUtil
 import org.eclipse.xtext.XtextPackage
 import org.eclipse.xtext.XtextStandaloneSetup
 import org.eclipse.xtext.mwe.ResourceDescriptionsProvider
-import org.eclipse.xtext.naming.QualifiedName
 import org.eclipse.xtext.resource.XtextResourceSet
 import org.junit.Before
 import org.junit.Test
@@ -29,42 +28,42 @@ class XtextIndexServiceTest {
 		// given
 		val resourceSet = injector.getInstance(XtextResourceSet)
 		resourceSet.getResource(URI.createFileURI("src/test/resources/index/MyDsl.xtext"), true)
-		val expectedName = QualifiedName.create("org", "xtext", "example", "mydsl", "MyDsl")
+		val expectedExportedObjectName = 'org.xtext.example.mydsl.MyDsl'
 
 		// when
 		val index = injector.getInstance(ResourceDescriptionsProvider).get(resourceSet)
 
 		// then
-		assertThat(index.exportedObjects.head.name).isEqualTo(expectedName)
-
+		assertThat(index.exportedObjects.map[name.toString]).contains(expectedExportedObjectName)
 	}
 
 	@Test
 	def void shouldReturnEPackageByName() {
 		// given
 		val ePackage = EPackage.Registry.INSTANCE.getEPackage("http://www.eclipse.org/2008/Xtext")
-		val expectedEReference = XtextPackage.eINSTANCE.grammar_UsedGrammars
-		
+		val expectedEReferenceNameContainedInXtextGrammar = 'usedGrammars'
+
 		// when
 		val grammar = ePackage.getEClassifier("Grammar")
-		
+
 		// then
-		assertThat(grammar.eCrossReferences).contains(expectedEReference)
+		assertThat(grammar.eCrossReferences.filter(EReference).map[name]).contains(
+			expectedEReferenceNameContainedInXtextGrammar)
 	}
-	
+
 	@Test
 	def void shouldBeReconstructibleFromURI() {
 		// given
-		val eReferenceURI = EcoreUtil.getURI(XtextPackage.eINSTANCE.grammar_UsedGrammars)
-		
+		val usedGrammersEReferenceURI = EcoreUtil.getURI(XtextPackage.eINSTANCE.grammar_UsedGrammars)
+
 		// when
-		val ePackage = EPackage.Registry.INSTANCE.getEPackage(eReferenceURI.trimFragment.toString)
-		val actualEObject = ePackage.eResource.getEObject(eReferenceURI.fragment)
-		
-		
+		val ePackageOfUsedGrammars = EPackage.Registry.INSTANCE.getEPackage(usedGrammersEReferenceURI.trimFragment.toString)
+		val actualEObject = ePackageOfUsedGrammars.eResource.getEObject(usedGrammersEReferenceURI.fragment)
+
 		// then
-		assertThat(actualEObject).isInstanceOf(EReference)
+		assertThat(actualEObject).isInstanceOf(EReference) 
 		assertThat((actualEObject as EReference).name).isEqualTo("usedGrammars")
 		assertThat(actualEObject).isSameAs(XtextPackage.eINSTANCE.grammar_UsedGrammars)
 	}
+
 }

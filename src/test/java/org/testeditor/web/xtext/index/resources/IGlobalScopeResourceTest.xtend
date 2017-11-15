@@ -111,7 +111,7 @@ class IGlobalScopeResourceTest {
 }
 
 @Path("/xtext/index/global-scope")
-class DummyGlobalScopeResource implements IGlobalScopeResource {
+class DummyGlobalScopeResource implements GlobalScopeResource {
 	public String context = null
 	public String eReferenceURIString = null
 	public String contentType = null
