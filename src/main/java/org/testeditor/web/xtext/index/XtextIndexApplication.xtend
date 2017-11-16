@@ -96,7 +96,7 @@ abstract class XtextIndexApplication extends DropwizardApplication<XtextIndexCon
 		try {
 			val root = new File(configuration.repoLocation)
 			gitService.init(root, configuration.repoUrl)
-			indexFiller.fillWithFileRecursively(indexInstance, root)
+			indexFiller.fillWithFileRecursively(getIndexInstance, root)
 		} catch (GitAPIException e) {
 			logger.error('''Failed repo initialization with repoLocation='«configuration.repoLocation» and repoUrl='«configuration.repoUrl»'. ''', e)
 		}		
