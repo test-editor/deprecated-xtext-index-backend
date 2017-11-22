@@ -179,8 +179,6 @@ class GlobalScopeResourceIntegrationTest extends AbstractIntegrationTest {
 
 		// then
 		assertThat(response.status).isEqualTo(INTERNAL_SERVER_ERROR.statusCode)
-		assertThat((response.entity as InputStream).deserializeException.message).isEqualTo(
-			"Failed to create resource for URI '' of type ''.")
 	}
 
 	@Test
@@ -196,8 +194,6 @@ class GlobalScopeResourceIntegrationTest extends AbstractIntegrationTest {
 
 		// then
 		assertThat(response.status).isEqualTo(INTERNAL_SERVER_ERROR.statusCode)
-		assertThat((response.entity as InputStream).deserializeException.message).isEqualTo(
-			"Failed to create resource for URI '' of type 'tsl'.")
 	}
 
 }
