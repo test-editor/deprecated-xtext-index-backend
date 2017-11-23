@@ -1,6 +1,8 @@
 package org.testeditor.web.xtext.index.resources
 
 import java.io.IOException
+import javax.inject.Inject
+import javax.inject.Provider
 import javax.ws.rs.Consumes
 import javax.ws.rs.POST
 import javax.ws.rs.Path
@@ -13,8 +15,6 @@ import org.eclipse.emf.ecore.EPackage
 import org.eclipse.emf.ecore.EReference
 import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.emf.ecore.resource.ResourceSet
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl
-import org.eclipse.xtext.resource.impl.ResourceSetBasedResourceDescriptions
 import org.eclipse.xtext.scoping.IGlobalScopeProvider
 import org.eclipse.xtext.util.StringInputStream
 import org.slf4j.LoggerFactory
@@ -26,13 +26,10 @@ class GlobalScopeResourceWithSeparateContextResourceSet implements GlobalScopeRe
 
 	protected static val logger = LoggerFactory.getLogger(GlobalScopeResourceWithSeparateContextResourceSet)
 
-	val IGlobalScopeProvider globalScopeProvider
-	val ResourceSetBasedResourceDescriptions index
-
-	new(IGlobalScopeProvider globalScopeProvider, ResourceSetBasedResourceDescriptions index) {
-		this.globalScopeProvider = globalScopeProvider
-		this.index = index
-	}
+	@Inject
+	var IGlobalScopeProvider globalScopeProvider
+	@Inject
+	var Provider<ResourceSet> resourceSetProvider
 
 	@POST // to allow context content to be passed as payload (instead of using query parameters)
 	@Consumes("text/plain")
@@ -51,7 +48,7 @@ class GlobalScopeResourceWithSeparateContextResourceSet implements GlobalScopeRe
 
 	private def createContextResource(String context, String contextURI, String contentType) {
 		logger.debug("Trying to retrieve or create context resource type='{}', URI='{}'", contentType, contextURI)
-		val resourceSet = new ResourceSetImpl // using empty resource set, since context will be used for this request only and is not part of the index
+		val resourceSet = resourceSetProvider.get // using empty resource set, since context will be used for this request only and is not part of the index
 		val resource = getOrCreateResource(resourceSet, contextURI, contentType)
 		if(!context.nullOrEmpty) {
 			loadResource(resource, context)
