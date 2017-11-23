@@ -55,7 +55,7 @@ class AbstractIntegrationTest {
 	@Rule
 	public val dropwizardRule = new DropwizardAppRule(TestXtextIndexApplication,
 		ResourceHelpers.resourceFilePath("config.yml"), #[
-			config('repoLocation', temporaryFolder.root.absolutePath),
+			config('localRepoFileRoot', temporaryFolder.root.absolutePath),
 			config('logging.level', 'INFO')
 		])
 
