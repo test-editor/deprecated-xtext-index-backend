@@ -37,5 +37,5 @@ class FileBasedXtextIndexFillerTest extends AbstractTestInjectingMembers {
 		// then
 		assertThat(allRejected).isTrue
 	}
-	
+
 }

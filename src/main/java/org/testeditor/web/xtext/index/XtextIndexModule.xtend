@@ -14,7 +14,7 @@ import org.eclipse.xtext.resource.IResourceDescriptions
  * </pre>  
  */
 class XtextIndexModule extends AbstractModule {
-	
+
 	override protected configure() {
 		binder.bind(IResourceDescriptions).to(XtextIndex)
 	}

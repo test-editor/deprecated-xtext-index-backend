@@ -16,7 +16,6 @@ package org.testeditor.web.xtext.index
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.google.inject.Injector
 import com.google.inject.Module
-import com.google.inject.TypeLiteral
 import io.dropwizard.setup.Bootstrap
 import io.dropwizard.setup.Environment
 import java.io.File
@@ -32,10 +31,10 @@ import org.slf4j.LoggerFactory
 import org.testeditor.web.dropwizard.DropwizardApplication
 import org.testeditor.web.xtext.index.persistence.GitService
 import org.testeditor.web.xtext.index.resources.GlobalScopeResource
+import org.testeditor.web.xtext.index.resources.GlobalScopeResourceWithSeparateContextResourceSet
 import org.testeditor.web.xtext.index.resources.bitbucket.Push
 import org.testeditor.web.xtext.index.serialization.EObjectDescriptionDeserializer
 import org.testeditor.web.xtext.index.serialization.EObjectDescriptionSerializer
-import org.testeditor.web.xtext.index.resources.GlobalScopeResourceWithSeparateContextResourceSet
 
 /**
  * Abstract application to be inherited by actual dropwizard index application
