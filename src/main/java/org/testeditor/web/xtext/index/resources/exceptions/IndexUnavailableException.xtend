@@ -5,4 +5,5 @@ class IndexUnavailableException extends GlobalScopeResourceException {
 	new(String message) {
 		super(message)
 	}
+
 }
